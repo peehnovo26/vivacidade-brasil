@@ -409,7 +409,7 @@
 
     <!-- Business Modal -->
     <div id="businessModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
             <h2 class="text-2xl font-bold mb-6" id="business-modal-title">Novo Negócio</h2>
             <div class="form-group">
                 <label>Nome</label>
@@ -417,15 +417,110 @@
             </div>
             <div class="form-group">
                 <label>Descrição</label>
-                <textarea id="business-desc" rows="3" placeholder="Descrição"></textarea>
+                <textarea id="business-desc" rows="3" placeholder="Descrição do negócio..."></textarea>
             </div>
             <div class="form-group">
                 <label>Categoria</label>
-                <input type="text" id="business-category" placeholder="Categoria">
+                <select id="business-category" required>
+                    <option value="">-- Selecione uma categoria --</option>
+                    <option value="Restaurante">🍽️ Restaurante</option>
+                    <option value="Café">☕ Café</option>
+                    <option value="Bar">🍸 Bar</option>
+                    <option value="Pizzaria">🍕 Pizzaria</option>
+                    <option value="Sorveteria">🍦 Sorveteria</option>
+                    <option value="Padaria">🥐 Padaria</option>
+                    <option value="Churrascaria">🍖 Churrascaria</option>
+                    <option value="Lanchonete">🍔 Lanchonete</option>
+                    <option value="Hotel">🏨 Hotel</option>
+                    <option value="Pousada">🏩 Pousada</option>
+                    <option value="Hostel">🛏️ Hostel</option>
+                    <option value="Aluguel de Temporada">🏠 Aluguel de Temporada</option>
+                    <option value="Agência de Turismo">✈️ Agência de Turismo</option>
+                    <option value="Passeios e Tours">🚌 Passeios e Tours</option>
+                    <option value="Trilhas e Ecoturismo">🥾 Trilhas e Ecoturismo</option>
+                    <option value="Rafting">🚣 Rafting</option>
+                    <option value="Parque Aquático">🌊 Parque Aquático</option>
+                    <option value="Museu">🏛️ Museu</option>
+                    <option value="Galeria de Arte">🎨 Galeria de Arte</option>
+                    <option value="Cinema">🎬 Cinema</option>
+                    <option value="Teatro">🎭 Teatro</option>
+                    <option value="Parque de Diversões">🎡 Parque de Diversões</option>
+                    <option value="Ginásio Esportivo">⚽ Ginásio Esportivo</option>
+                    <option value="Campo de Futebol">⚽ Campo de Futebol</option>
+                    <option value="Quadra de Tênis">🎾 Quadra de Tênis</option>
+                    <option value="Spa e Wellness">💆 Spa e Wellness</option>
+                    <option value="Academia de Ginástica">💪 Academia de Ginástica</option>
+                    <option value="Yoga e Pilates">🧘 Yoga e Pilates</option>
+                    <option value="Loja de Roupas">👔 Loja de Roupas</option>
+                    <option value="Loja de Artesanato">🎁 Loja de Artesanato</option>
+                    <option value="Loja de Souvenirs">🛍️ Loja de Souvenirs</option>
+                    <option value="Joalharia">💎 Joalharia</option>
+                    <option value="Farmácia">💊 Farmácia</option>
+                    <option value="Clínica Médica">⚕️ Clínica Médica</option>
+                    <option value="Consultório Odontológico">🦷 Consultório Odontológico</option>
+                    <option value="Salão de Beleza">💅 Salão de Beleza</option>
+                    <option value="Barbershop">💈 Barbershop</option>
+                    <option value="Cabeleireiro">✂️ Cabeleireiro</option>
+                    <option value="Táxi">🚕 Táxi</option>
+                    <option value="Aluguel de Carro">🚗 Aluguel de Carro</option>
+                    <option value="Moto Táxi">🏍️ Moto Táxi</option>
+                    <option value="Transporte">🚐 Transporte</option>
+                    <option value="Livraria">📚 Livraria</option>
+                    <option value="Biblioteca">📖 Biblioteca</option>
+                    <option value="Escola">🎓 Escola</option>
+                    <option value="Cursos">📝 Cursos</option>
+                    <option value="Consultoria">💼 Consultoria</option>
+                    <option value="Escritório de Advocacia">⚖️ Escritório de Advocacia</option>
+                    <option value="Contabilidade">📊 Contabilidade</option>
+                    <option value="Seguros">🛡️ Seguros</option>
+                    <option value="Imobiliária">🏘️ Imobiliária</option>
+                    <option value="Fotógrafo">📷 Fotógrafo</option>
+                    <option value="Estúdio de Fotografia">📸 Estúdio de Fotografia</option>
+                    <option value="Videógrafo">🎥 Videógrafo</option>
+                    <option value="DJ e Música">🎵 DJ e Música</option>
+                    <option value="Casamento e Eventos">🎉 Casamento e Eventos</option>
+                    <option value="Decoração">🎀 Decoração</option>
+                    <option value="Flores">🌹 Flores</option>
+                    <option value="Padaria Artesanal">🥖 Padaria Artesanal</option>
+                    <option value="Confeitaria">🎂 Confeitaria</option>
+                    <option value="Açougue">🥩 Açougue</option>
+                    <option value="Peixaria">🐟 Peixaria</option>
+                    <option value="Feira de Orgânicos">🥬 Feira de Orgânicos</option>
+                    <option value="Supermercado">🛒 Supermercado</option>
+                    <option value="Mercado">🏪 Mercado</option>
+                    <option value="Açai e Drinks">🥤 Açai e Drinks</option>
+                    <option value="Smoothie Bar">🥗 Smoothie Bar</option>
+                    <option value="Pastel">🥐 Pastel</option>
+                    <option value="Coxinha">🍗 Coxinha</option>
+                    <option value="Tapioca">🍲 Tapioca</option>
+                    <option value="Comida Vegana">🌱 Comida Vegana</option>
+                    <option value="Comida Fitness">🥗 Comida Fitness</option>
+                    <option value="Conveniência">🏬 Conveniência</option>
+                    <option value="Posto de Gasolina">⛽ Posto de Gasolina</option>
+                    <option value="Lavagem de Carro">🚗 Lavagem de Carro</option>
+                    <option value="Mecânica">🔧 Mecânica</option>
+                    <option value="Eletricista">⚡ Eletricista</option>
+                    <option value="Encanador">🔨 Encanador</option>
+                    <option value="Construção">🏗️ Construção</option>
+                    <option value="Imóvel Comercial">🏢 Imóvel Comercial</option>
+                    <option value="Outro">➕ Outro</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Cidade</label>
-                <input type="text" id="business-city" placeholder="Cidade">
+                <select id="business-city" required>
+                    <option value="">-- Selecione a cidade --</option>
+                    <option value="Curitiba">Curitiba</option>
+                    <option value="Londrina">Londrina</option>
+                    <option value="Maringá">Maringá</option>
+                    <option value="Ponta Grossa">Ponta Grossa</option>
+                    <option value="Cascavel">Cascavel</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Imagem</label>
+                <input type="file" id="business-image" accept="image/*" placeholder="Selecione uma imagem">
+                <small style="color: #666; margin-top: 5px; display: block;">Formatos suportados: JPG, PNG (máx. 5MB)</small>
             </div>
             <div class="flex gap-3">
                 <button onclick="closeBusinessModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
@@ -771,6 +866,7 @@
             document.getElementById('business-desc').value = '';
             document.getElementById('business-category').value = '';
             document.getElementById('business-city').value = '';
+            document.getElementById('business-image').value = '';
             document.getElementById('businessModal').classList.add('active');
         }
 
@@ -787,6 +883,7 @@
             document.getElementById('business-category').value = category;
             document.getElementById('business-city').value = city;
             document.getElementById('business-desc').value = desc;
+            document.getElementById('business-image').value = '';
             document.getElementById('businessModal').classList.add('active');
         }
 
@@ -795,6 +892,7 @@
             const description = document.getElementById('business-desc').value;
             const category = document.getElementById('business-category').value;
             const city = document.getElementById('business-city').value;
+            const imageFile = document.getElementById('business-image').files[0];
 
             if (!name || !category || !city) {
                 alert('Preencha todos os campos obrigatórios');
@@ -802,6 +900,30 @@
             }
 
             try {
+                let businessData = { name, description, category, city };
+                
+                // Se houver imagem, fazer upload primeiro
+                if (imageFile) {
+                    const formData = new FormData();
+                    formData.append('image', imageFile);
+                    formData.append('businessId', editingBusinessId || 'new');
+
+                    const uploadRes = await fetch(`${API_URL}/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${adminToken}`
+                        },
+                        body: formData
+                    });
+
+                    if (uploadRes.ok) {
+                        const uploadData = await uploadRes.json();
+                        businessData.image = uploadData.imageUrl || uploadData.url;
+                    } else {
+                        console.warn('Erro ao fazer upload da imagem, continuando sem imagem');
+                    }
+                }
+
                 const method = editingBusinessId ? 'PUT' : 'POST';
                 const url = editingBusinessId 
                     ? `${API_URL}/businesses/${editingBusinessId}`
@@ -813,7 +935,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${adminToken}`
                     },
-                    body: JSON.stringify({ name, description, category, city })
+                    body: JSON.stringify(businessData)
                 });
 
                 if (res.ok) {
@@ -822,7 +944,8 @@
                     loadBusinesses();
                     loadDashboardData();
                 } else {
-                    alert('Erro ao salvar negócio');
+                    const error = await res.json();
+                    alert(`Erro ao salvar negócio: ${error.error}`);
                 }
             } catch (err) {
                 console.error(err);
