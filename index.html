@@ -152,7 +152,16 @@
       <div class="flex items-center gap-3"><button onclick="window.location.href='/register-business.html'" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white gradient-primary hover:opacity-90 transition-all shadow-lg shadow-blue-500/25">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg> Para Empresas </button> <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        </svg> Para Empresas </button> 
+        <div id="auth-buttons" class="flex items-center gap-2">
+          <button onclick="window.location.href='/login.html'" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-all">Login</button>
+          <button onclick="window.location.href='/register.html'" class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all">Registrar</button>
+        </div>
+        <div id="user-menu" style="display:none;" class="flex items-center gap-2">
+          <button id="logout-btn" onclick="logout()" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-all">Logout</button>
+          <button id="admin-btn" onclick="window.location.href='/admin/dashboard.html'" style="display:none;" class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-all">🔐 Admin</button>
+        </div>
+        <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
         <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg></button>
@@ -1295,6 +1304,49 @@
       navigateTo('listing');
       updateFavoritesUI();
     }
+
+    // Função de logout
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      document.getElementById('auth-buttons').style.display = 'flex';
+      document.getElementById('user-menu').style.display = 'none';
+      navigateTo('home');
+      showToast('Desconectado com sucesso', '👋');
+    }
+
+    // Verificar se está logado ao carregar
+    window.addEventListener('load', () => {
+      const userToken = localStorage.getItem('token');
+      const adminToken = localStorage.getItem('admin_token');
+      const adminUser = localStorage.getItem('admin_user');
+      
+      if (userToken || adminToken) {
+        document.getElementById('auth-buttons').style.display = 'none';
+        document.getElementById('user-menu').style.display = 'flex';
+        
+        // Se for admin, mostrar botão admin
+        if (adminToken && adminUser) {
+          const user = JSON.parse(adminUser);
+          if (user.role === 'admin') {
+            document.getElementById('admin-btn').style.display = 'block';
+          }
+        }
+      } else {
+        document.getElementById('auth-buttons').style.display = 'flex';
+        document.getElementById('user-menu').style.display = 'none';
+      }
+      initApp();
+    });
+    
+    // Atalho para admin: Shift + Alt + A
+    document.addEventListener('keydown', (e) => {
+      if (e.shiftKey && e.altKey && e.key === 'A') {
+        window.location.href = '/admin/login.html';
+      }
+    });
     
     // Toast notification
     function showToast(message, icon = '✓') {

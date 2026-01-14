@@ -201,6 +201,7 @@
           ? 'http://localhost:5000/api'
           : 'https://vivacidade-backend.onrender.com/api';
         let selectedFiles = [];
+        let uploadedImageUrls = []; // Armazena URLs das fotos no Cloudinary
 
         // Drag and Drop
         const uploadArea = document.getElementById('upload-area');
@@ -233,6 +234,8 @@
         function handleFiles(files) {
             selectedFiles = Array.from(files);
             updatePreview();
+            // Faz upload automático pro Cloudinary
+            uploadToCloudinary();
         }
 
         function updatePreview() {
@@ -256,7 +259,39 @@
 
         function removeFile(index) {
             selectedFiles.splice(index, 1);
+            uploadedImageUrls.splice(index, 1);
             updatePreview();
+        }
+
+        // 🔥 NOVO: Upload automático para Cloudinary
+        async function uploadToCloudinary() {
+            if (selectedFiles.length === 0) return;
+
+            try {
+                const formData = new FormData();
+                selectedFiles.forEach(file => {
+                    formData.append('images', file);
+                });
+
+                // Faz upload pro endpoint do Cloudinary
+                const response = await fetch(`${API_URL}/upload/upload-multiple`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    console.warn('Erro no upload do Cloudinary');
+                    return;
+                }
+
+                const data = await response.json();
+                // Armazena os URLs das imagens
+                uploadedImageUrls = data.images.map(img => img.url);
+                console.log('✅ Imagens enviadas pro Cloudinary:', uploadedImageUrls);
+
+            } catch (error) {
+                console.error('Erro ao enviar imagens:', error);
+            }
         }
 
         async function handleSubmit(e) {
@@ -271,6 +306,7 @@
                 phone: document.getElementById('phone').value,
                 website: document.getElementById('website').value,
                 address: document.getElementById('address').value,
+                images: uploadedImageUrls // 🔥 Adiciona as URLs das fotos do Cloudinary
             };
 
             try {
@@ -280,7 +316,13 @@
                     return;
                 }
 
-                // Criar empresa
+                // Se não tem imagens, mostra aviso
+                if (uploadedImageUrls.length === 0) {
+                    showError('Por favor, adicione pelo menos uma imagem');
+                    return;
+                }
+
+                // Criar empresa COM as URLs das fotos do Cloudinary
                 const res = await fetch(`${API_URL}/businesses`, {
                     method: 'POST',
                     headers: {
@@ -294,28 +336,6 @@
                     const data = await res.json();
                     showError(data.error || 'Erro ao cadastrar empresa');
                     return;
-                }
-
-                const business = await res.json();
-
-                // Upload de imagens
-                if (selectedFiles.length > 0) {
-                    const formData = new FormData();
-                    selectedFiles.forEach(file => {
-                        formData.append('images', file);
-                    });
-
-                    const uploadRes = await fetch(`${API_URL}/businesses/${business._id}/upload-images`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: formData
-                    });
-
-                    if (!uploadRes.ok) {
-                        console.warn('Erro ao fazer upload de imagens');
-                    }
                 }
 
                 showSuccess('Empresa cadastrada com sucesso!');

@@ -631,7 +631,8 @@
         // Logout
         function logout() {
             localStorage.removeItem('admin_token');
-            window.location.href = '/login.html';
+            localStorage.removeItem('admin_user');
+            window.location.href = '/admin/login.html';
         }
     </script>
 </body>
