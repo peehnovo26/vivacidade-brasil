@@ -235,12 +235,12 @@
                             <div style="font-size: 36px; font-weight: 700; background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="count-businesses">0</div>
                         </div>
                         <div class="card">
-                            <p class="text-gray-600 text-sm mb-2">Total de Avaliações</p>
-                            <div style="font-size: 36px; font-weight: 700; background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="count-reviews">0</div>
+                            <p class="text-gray-600 text-sm mb-2">Planos Ativos</p>
+                            <div style="font-size: 36px; font-weight: 700; background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="count-plans">0</div>
                         </div>
                         <div class="card">
-                            <p class="text-gray-600 text-sm mb-2">Negócios Favoritos</p>
-                            <div style="font-size: 36px; font-weight: 700; background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="count-favorites">0</div>
+                            <p class="text-gray-600 text-sm mb-2">Total de Avaliações</p>
+                            <div style="font-size: 36px; font-weight: 700; background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="count-reviews">0</div>
                         </div>
                     </div>
                 </div>
@@ -259,7 +259,7 @@
                                     <th>Nome</th>
                                     <th>Categoria</th>
                                     <th>Cidade</th>
-                                    <th>Status</th>
+                                    <th>Plano</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
@@ -416,11 +416,13 @@
                 const reviews = await reviewsRes.json();
 
                 const myReviews = reviews.filter(r => r.userId === userData._id);
+                const myBusinesses = businesses.filter(b => b.owner === userData._id || b.owner?._id === userData._id);
+                const activePlans = myBusinesses.filter(b => b.plan && b.plan !== 'free').length;
                 const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 
-                document.getElementById('count-businesses').textContent = Array.isArray(businesses) ? businesses.length : 0;
+                document.getElementById('count-businesses').textContent = Array.isArray(myBusinesses) ? myBusinesses.length : 0;
+                document.getElementById('count-plans').textContent = activePlans;
                 document.getElementById('count-reviews').textContent = myReviews.length;
-                document.getElementById('count-favorites').textContent = favorites.length;
             } catch (err) {
                 console.error('Erro ao carregar stats:', err);
             }
@@ -440,14 +442,29 @@
                     return;
                 }
 
+                const planColors = {
+                    'free': 'badge-success',
+                    'start': 'badge-warning',
+                    'plus': 'badge-warning',
+                    'elite': 'bg-purple-200 text-purple-800'
+                };
+
+                const planLabels = {
+                    'free': '🆓 Grátis',
+                    'start': '⭐ Iniciante',
+                    'plus': '✨ Plus',
+                    'elite': '👑 Elite'
+                };
+
                 tbody.innerHTML = myBusiness.map(b => `
                     <tr>
                         <td><strong>${b.name}</strong></td>
                         <td>${b.category || '-'}</td>
                         <td>${b.city || '-'}</td>
-                        <td><span class="badge badge-success">Ativo</span></td>
-                        <td>
+                        <td><span class="badge ${planColors[b.plan] || 'badge-success'}">${planLabels[b.plan] || b.plan}</span></td>
+                        <td style="display: flex; gap: 8px;">
                             <a href="/register-business.html?id=${b._id}" class="btn btn-edit" style="padding: 6px 12px; font-size: 12px;">✏️ Editar</a>
+                            ${b.plan === 'free' ? `<a href="/plans.html?business=${b._id}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">📦 Upgrade</a>` : ''}
                         </td>
                     </tr>
                 `).join('');
