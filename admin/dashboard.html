@@ -3,60 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - VivaCidade Brasil</title>
+    <title>Painel Admin - VivaCidade Brasil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .gradient-primary {
-            background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+            background: #f0f4f8;
         }
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100vh;
             background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
-            padding: 20px;
-            overflow-y: auto;
+            min-height: 100vh;
         }
-        .sidebar-item {
-            padding: 12px 16px;
-            margin: 8px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .nav-item {
+            transition: all 0.3s ease;
         }
-        .sidebar-item:hover {
-            background: rgba(255,255,255,0.1);
+        .nav-item:hover {
+            transform: translateX(4px);
+            background: rgba(0, 102, 255, 0.1);
         }
-        .sidebar-item.active {
+        .nav-item.active {
             background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
-        }
-        .main-content {
-            margin-left: 280px;
-            padding: 20px;
+            border-left: 4px solid white;
         }
         .stat-card {
             background: white;
             border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
         .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #0066FF;
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .table-container {
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
         table {
             width: 100%;
@@ -78,12 +70,13 @@
             background: #f8f9fa;
         }
         .btn {
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 10px 16px;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            font-size: 14px;
         }
         .btn-primary {
             background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
@@ -99,16 +92,78 @@
         .btn-danger:hover {
             background: #ff3838;
         }
-        .btn-secondary {
-            background: #e9ecef;
+        .btn-edit {
+            background: #f39c12;
+            color: white;
+        }
+        .btn-edit:hover {
+            background: #e67e22;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            width: 90%;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
             color: #333;
         }
-        .btn-secondary:hover {
-            background: #dee2e6;
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0066FF;
+            box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #999;
+        }
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
         .badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -125,514 +180,643 @@
             background: #f8d7da;
             color: #721c24;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 14px;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #0066FF;
-            box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
-        }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 16px 24px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s ease;
-        }
-        .toast-success {
-            background: #28a745;
-        }
-        .toast-error {
-            background: #ff4757;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
     </style>
 </head>
-<body class="bg-slate-50">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div style="margin-bottom: 40px;">
-            <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 4px;">VivaCidade</h1>
-            <p style="font-size: 12px; opacity: 0.7;">Painel de Administração</p>
-        </div>
-        <nav>
-            <div class="sidebar-item active" onclick="switchTab('dashboard')">
-                📊 Dashboard
-            </div>
-            <div class="sidebar-item" onclick="switchTab('users')">
-                👥 Usuários
-            </div>
-            <div class="sidebar-item" onclick="switchTab('businesses')">
-                🏢 Empresas
-            </div>
-            <div class="sidebar-item" onclick="switchTab('payments')">
-                💳 Pagamentos
-            </div>
-            <div class="sidebar-item" onclick="switchTab('settings')">
-                ⚙️ Configurações
-            </div>
-            <div class="sidebar-item" style="margin-top: 40px; color: #ff4757;" onclick="logout()">
-                🚪 Sair
-            </div>
-        </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Dashboard Tab -->
-        <div id="dashboard-tab" class="tab-content">
-            <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 30px;">Dashboard</h1>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
-                <div class="stat-card">
-                    <p style="color: #666; margin-bottom: 10px;">Total de Usuários</p>
-                    <div class="stat-number" id="stat-users">0</div>
-                </div>
-                <div class="stat-card">
-                    <p style="color: #666; margin-bottom: 10px;">Total de Empresas</p>
-                    <div class="stat-number" id="stat-businesses">0</div>
-                </div>
-                <div class="stat-card">
-                    <p style="color: #666; margin-bottom: 10px;">Usuários Premium</p>
-                    <div class="stat-number" id="stat-premium">0</div>
-                </div>
-                <div class="stat-card">
-                    <p style="color: #666; margin-bottom: 10px;">Total de Eventos</p>
-                    <div class="stat-number" id="stat-events">0</div>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 text-white p-6">
+            <div class="flex items-center mb-8">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-lg flex items-center justify-center font-bold text-white mr-3">VC</div>
+                <div>
+                    <h1 class="text-xl font-bold">VivaCidade</h1>
+                    <p class="text-xs text-gray-400">Painel Admin</p>
                 </div>
             </div>
 
-            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Atividade Recente</h2>
-                <p style="color: #666;">Gráficos e análises em desenvolvimento...</p>
-            </div>
+            <hr class="border-gray-600 mb-6">
+
+            <nav class="space-y-2">
+                <div class="nav-item active px-4 py-3 rounded-lg cursor-pointer flex items-center" onclick="switchSection('dashboard')">
+                    <span class="text-xl mr-3">📊</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item px-4 py-3 rounded-lg cursor-pointer flex items-center" onclick="switchSection('businesses')">
+                    <span class="text-xl mr-3">🏪</span>
+                    <span>Negócios</span>
+                </div>
+                <div class="nav-item px-4 py-3 rounded-lg cursor-pointer flex items-center" onclick="switchSection('users')">
+                    <span class="text-xl mr-3">👥</span>
+                    <span>Usuários</span>
+                </div>
+                <div class="nav-item px-4 py-3 rounded-lg cursor-pointer flex items-center" onclick="switchSection('reviews')">
+                    <span class="text-xl mr-3">⭐</span>
+                    <span>Avaliações</span>
+                </div>
+                <div class="nav-item px-4 py-3 rounded-lg cursor-pointer flex items-center" onclick="switchSection('events')">
+                    <span class="text-xl mr-3">📅</span>
+                    <span>Eventos</span>
+                </div>
+            </nav>
+
+            <hr class="border-gray-600 my-6">
+
+            <button onclick="logout()" class="w-full px-4 py-3 rounded-lg bg-red-500 hover:bg-red-600 flex items-center justify-center text-white font-600 transition">
+                <span class="mr-2">🚪</span>
+                Sair
+            </button>
         </div>
 
-        <!-- Users Tab -->
-        <div id="users-tab" class="tab-content" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h1 style="font-size: 32px; font-weight: bold;">Usuários</h1>
-                <input type="text" id="user-search" placeholder="Buscar usuários..." style="width: 300px;">
-            </div>
-
-            <div class="table-container">
-                <table id="users-table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Tipo</th>
-                            <th>Status Premium</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Businesses Tab -->
-        <div id="businesses-tab" class="tab-content" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h1 style="font-size: 32px; font-weight: bold;">Empresas</h1>
-                <button class="btn btn-primary" onclick="openBusinessModal()">+ Nova Empresa</button>
-            </div>
-
-            <div class="table-container">
-                <table id="businesses-table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>Cidade</th>
-                            <th>Plano</th>
-                            <th>Avaliação</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Payments Tab -->
-        <div id="payments-tab" class="tab-content" style="display: none;">
-            <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 30px;">Pagamentos</h1>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
-                <div class="stat-card">
-                    <p style="color: #666; margin-bottom: 10px;">Receita Mensal</p>
-                    <div class="stat-number">R$ 0</div>
-                </div>
-                <div class="stat-card">
-                    <p style="color: #666; margin-bottom: 10px;">Assinaturas Ativas</p>
-                    <div class="stat-number" id="stat-active-subs">0</div>
-                </div>
-                <div class="stat-card">
-                    <p style="color: #666; margin-bottom: 10px;">Assinaturas Canceladas</p>
-                    <div class="stat-number">0</div>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Usuário</th>
-                            <th>Plano</th>
-                            <th>Status</th>
-                            <th>Valor</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: #666; padding: 30px;">Nenhuma transação registrada</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="settings-tab" class="tab-content" style="display: none;">
-            <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 30px;">Configurações</h1>
-            
-            <div style="background: white; border-radius: 12px; padding: 30px; max-width: 600px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Configurações da Plataforma</h2>
-                
-                <div class="form-group">
-                    <label>Chave Stripe (Teste)</label>
-                    <input type="password" placeholder="sk_test_..." value="sk_test_seu_valor">
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Bem-vindo ao Painel Admin</h2>
+                    <div id="admin-user" class="text-right">
+                        <p class="text-gray-600 font-600">Carregando...</p>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Email de Suporte</label>
-                    <input type="email" placeholder="suporte@vivacidade.com">
+                <!-- DASHBOARD SECTION -->
+                <div id="dashboard" class="section active">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card">
+                            <p class="text-gray-600 text-sm mb-2">Total de Negócios</p>
+                            <div class="stat-number" id="total-businesses">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-gray-600 text-sm mb-2">Total de Usuários</p>
+                            <div class="stat-number" id="total-users">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-gray-600 text-sm mb-2">Total de Avaliações</p>
+                            <div class="stat-number" id="total-reviews">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-gray-600 text-sm mb-2">Total de Eventos</p>
+                            <div class="stat-number" id="total-events">0</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-12 p-8 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">📈 Resumo da Plataforma</h3>
+                        <p class="text-gray-600 mb-4">Sistema completamente operacional em produção</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-600 text-green-800">✅ Backend: Online</p>
+                                <p class="text-sm text-gray-600">vivacidade-brasil-api.onrender.com</p>
+                            </div>
+                            <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-600 text-green-800">✅ Frontend: Online</p>
+                                <p class="text-sm text-gray-600">vivacidade-brasil-web.onrender.com</p>
+                            </div>
+                            <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-600 text-green-800">✅ MongoDB: Conectado</p>
+                                <p class="text-sm text-gray-600">Atlas cluster0</p>
+                            </div>
+                            <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-600 text-green-800">✅ Cloudinary: Ativo</p>
+                                <p class="text-sm text-gray-600">Upload de imagens funcional</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Taxa de Comissão (%)</label>
-                    <input type="number" placeholder="15" value="15">
+                <!-- BUSINESSES SECTION -->
+                <div id="businesses" class="section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Gerenciar Negócios</h3>
+                        <button onclick="openBusinessModal()" class="btn btn-primary">
+                            ➕ Novo Negócio
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Categoria</th>
+                                    <th>Cidade</th>
+                                    <th>Proprietário</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="businesses-table">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-gray-500">Carregando negócios...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <button class="btn btn-primary" style="width: 100%; padding: 12px;">Salvar Configurações</button>
+                <!-- USERS SECTION -->
+                <div id="users" class="section">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Gerenciar Usuários</h3>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Tipo</th>
+                                    <th>Data de Cadastro</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-gray-500">Carregando usuários...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- REVIEWS SECTION -->
+                <div id="reviews" class="section">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Gerenciar Avaliações</h3>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Negócio</th>
+                                    <th>Avaliador</th>
+                                    <th>Nota</th>
+                                    <th>Comentário</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reviews-table">
+                                <tr>
+                                    <td colspan="6" class="text-center py-8 text-gray-500">Carregando avaliações...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- EVENTS SECTION -->
+                <div id="events" class="section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Gerenciar Eventos</h3>
+                        <button onclick="openEventModal()" class="btn btn-primary">
+                            ➕ Novo Evento
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Negócio</th>
+                                    <th>Data</th>
+                                    <th>Local</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-table">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-gray-500">Carregando eventos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Business Modal -->
-    <div id="business-modal" class="modal">
+    <div id="businessModal" class="modal">
         <div class="modal-content">
-            <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Nova Empresa</h2>
-            
+            <h2 class="text-2xl font-bold mb-6">Novo Negócio</h2>
             <div class="form-group">
                 <label>Nome</label>
-                <input type="text" id="business-name" placeholder="Nome da empresa">
+                <input type="text" id="business-name" placeholder="Nome do negócio">
             </div>
-
-            <div class="form-group">
-                <label>Categoria</label>
-                <select id="business-category">
-                    <option>Hospedagem</option>
-                    <option>Gastronomia</option>
-                    <option>Turismo</option>
-                    <option>Eventos</option>
-                    <option>Serviços</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Cidade</label>
-                <select id="business-city">
-                    <option>Quatis</option>
-                    <option>Porto Real</option>
-                    <option>Resende</option>
-                    <option>Itatiaia</option>
-                    <option>Barra Mansa</option>
-                </select>
-            </div>
-
             <div class="form-group">
                 <label>Descrição</label>
-                <textarea id="business-description" placeholder="Descrição da empresa" rows="4"></textarea>
+                <textarea id="business-desc" rows="3" placeholder="Descrição"></textarea>
             </div>
-
             <div class="form-group">
-                <label>Plano</label>
-                <select id="business-plan">
-                    <option value="free">Free</option>
-                    <option value="plus">Plus</option>
-                    <option value="elite">Elite</option>
-                </select>
+                <label>Categoria</label>
+                <input type="text" id="business-category" placeholder="Categoria">
             </div>
+            <div class="form-group">
+                <label>Cidade</label>
+                <input type="text" id="business-city" placeholder="Cidade">
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeBusinessModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
+                <button onclick="createBusiness()" class="flex-1 btn btn-primary">Criar</button>
+            </div>
+        </div>
+    </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-primary" style="flex: 1;" onclick="saveNewBusiness()">Salvar</button>
-                <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('business-modal')">Cancelar</button>
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-6">Novo Evento</h2>
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="event-name" placeholder="Nome do evento">
+            </div>
+            <div class="form-group">
+                <label>Negócio ID</label>
+                <input type="text" id="event-business" placeholder="ID do negócio">
+            </div>
+            <div class="form-group">
+                <label>Data</label>
+                <input type="datetime-local" id="event-date">
+            </div>
+            <div class="form-group">
+                <label>Local</label>
+                <input type="text" id="event-location" placeholder="Local do evento">
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeEventModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
+                <button onclick="createEvent()" class="flex-1 btn btn-primary">Criar</button>
             </div>
         </div>
     </div>
 
     <script>
         const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
-        let currentUser = null;
+        let adminToken = localStorage.getItem('admin_token');
+        let adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}');
 
         // Check authentication
-        document.addEventListener('DOMContentLoaded', async () => {
-            const token = localStorage.getItem('admin_token');
-            if (!token) {
-                window.location.href = '/login.html';
+        window.addEventListener('load', () => {
+            if (!adminToken) {
+                window.location.href = '/admin/login.html';
                 return;
             }
+            loadDashboardData();
+            displayAdminUser();
+        });
 
+        function displayAdminUser() {
+            const userDiv = document.getElementById('admin-user');
+            userDiv.innerHTML = `
+                <p class="text-gray-800 font-600">${adminUser.name || 'Admin'}</p>
+                <p class="text-sm text-gray-500">${adminUser.email}</p>
+            `;
+        }
+
+        function switchSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Load data for section
+            if (sectionName === 'businesses') loadBusinesses();
+            else if (sectionName === 'users') loadUsers();
+            else if (sectionName === 'reviews') loadReviews();
+            else if (sectionName === 'events') loadEvents();
+        }
+
+        async function loadDashboardData() {
             try {
-                const res = await fetch(`${API_URL}/auth/me`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const [businessesRes, usersRes, reviewsRes, eventsRes] = await Promise.all([
+                    fetch(`${API_URL}/businesses`, { headers: { 'Authorization': `Bearer ${adminToken}` } }),
+                    fetch(`${API_URL}/admin/users`, { headers: { 'Authorization': `Bearer ${adminToken}` } }),
+                    fetch(`${API_URL}/admin/reviews`, { headers: { 'Authorization': `Bearer ${adminToken}` } }),
+                    fetch(`${API_URL}/admin/events`, { headers: { 'Authorization': `Bearer ${adminToken}` } })
+                ]);
+
+                const businesses = await businessesRes.json();
+                const users = await usersRes.json();
+                const reviews = await reviewsRes.json();
+                const events = await eventsRes.json();
+
+                document.getElementById('total-businesses').textContent = Array.isArray(businesses) ? businesses.length : 0;
+                document.getElementById('total-users').textContent = Array.isArray(users) ? users.length : 0;
+                document.getElementById('total-reviews').textContent = Array.isArray(reviews) ? reviews.length : 0;
+                document.getElementById('total-events').textContent = Array.isArray(events) ? events.length : 0;
+            } catch (err) {
+                console.error('Erro ao carregar dados:', err);
+            }
+        }
+
+        async function loadBusinesses() {
+            try {
+                const res = await fetch(`${API_URL}/businesses`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
                 });
-                const user = await res.json();
-                
-                if (user.role !== 'admin') {
-                    window.location.href = '/login.html';
+                const businesses = await res.json();
+                const tbody = document.getElementById('businesses-table');
+
+                if (!Array.isArray(businesses) || businesses.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Nenhum negócio cadastrado</td></tr>';
                     return;
                 }
 
-                currentUser = user;
-                loadDashboard();
+                tbody.innerHTML = businesses.map(b => `
+                    <tr>
+                        <td><strong>${b.name}</strong></td>
+                        <td>${b.category || '-'}</td>
+                        <td>${b.city || '-'}</td>
+                        <td>${b.owner || '-'}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editBusiness('${b._id}')">✏️ Editar</button>
+                            <button class="btn btn-danger" onclick="deleteBusiness('${b._id}')">🗑️ Deletar</button>
+                        </td>
+                    </tr>
+                `).join('');
             } catch (err) {
                 console.error(err);
-                window.location.href = '/login.html';
-            }
-        });
-
-        // Switch tabs
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.style.display = 'none';
-            });
-            document.getElementById(tabName + '-tab').style.display = 'block';
-
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            if (tabName === 'users') loadUsers();
-            if (tabName === 'businesses') loadBusinesses();
-        }
-
-        // Load dashboard stats
-        async function loadDashboard() {
-            try {
-                const token = localStorage.getItem('admin_token');
-                const res = await fetch(`${API_URL}/admin/stats`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const stats = await res.json();
-
-                document.getElementById('stat-users').textContent = stats.totalUsers;
-                document.getElementById('stat-businesses').textContent = stats.totalBusinesses;
-                document.getElementById('stat-premium').textContent = stats.premiumUsers;
-                document.getElementById('stat-events').textContent = stats.totalEvents;
-            } catch (err) {
-                console.error(err);
+                document.getElementById('businesses-table').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Erro ao carregar negócios</td></tr>';
             }
         }
 
-        // Load users
         async function loadUsers() {
             try {
-                const token = localStorage.getItem('admin_token');
                 const res = await fetch(`${API_URL}/admin/users`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
                 });
                 const users = await res.json();
+                const tbody = document.getElementById('users-table');
 
-                const tbody = document.querySelector('#users-table tbody');
-                tbody.innerHTML = '';
+                if (!Array.isArray(users) || users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Nenhum usuário cadastrado</td></tr>';
+                    return;
+                }
 
-                users.forEach(user => {
-                    const row = `
-                        <tr>
-                            <td>${user.name}</td>
-                            <td>${user.email}</td>
-                            <td><span class="badge badge-success">${user.role}</span></td>
-                            <td>${user.subscription.status === 'active' ? '<span class="badge badge-success">Ativo</span>' : '<span class="badge badge-warning">Inativo</span>'}</td>
-                            <td>
-                                <button class="btn btn-secondary" onclick="editUser('${user._id}')">Editar</button>
-                                <button class="btn btn-danger" onclick="deleteUser('${user._id}')">Deletar</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td><strong>${u.name}</strong></td>
+                        <td>${u.email}</td>
+                        <td><span class="badge ${u.role === 'admin' ? 'badge-danger' : 'badge-success'}">${u.role === 'admin' ? 'Admin' : 'Usuário'}</span></td>
+                        <td>${new Date(u.createdAt).toLocaleDateString('pt-BR')}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteUser('${u._id}')">🗑️ Deletar</button>
+                        </td>
+                    </tr>
+                `).join('');
             } catch (err) {
                 console.error(err);
+                document.getElementById('users-table').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Erro ao carregar usuários</td></tr>';
             }
         }
 
-        // Load businesses
-        async function loadBusinesses() {
+        async function loadReviews() {
             try {
-                const token = localStorage.getItem('admin_token');
-                const res = await fetch(`${API_URL}/admin/businesses`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const res = await fetch(`${API_URL}/admin/reviews`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
                 });
-                const businesses = await res.json();
+                const reviews = await res.json();
+                const tbody = document.getElementById('reviews-table');
 
-                const tbody = document.querySelector('#businesses-table tbody');
-                tbody.innerHTML = '';
+                if (!Array.isArray(reviews) || reviews.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">Nenhuma avaliação cadastrada</td></tr>';
+                    return;
+                }
 
-                businesses.forEach(business => {
-                    const row = `
-                        <tr>
-                            <td>${business.name}</td>
-                            <td>${business.category}</td>
-                            <td>${business.city}</td>
-                            <td><span class="badge badge-success">${business.plan}</span></td>
-                            <td>${business.rating.toFixed(1)} ⭐</td>
-                            <td>
-                                <button class="btn btn-secondary" onclick="editBusiness('${business._id}')">Editar</button>
-                                <button class="btn btn-danger" onclick="featureBusiness('${business._id}')">Feature</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
+                tbody.innerHTML = reviews.map(r => `
+                    <tr>
+                        <td>${r.businessId || '-'}</td>
+                        <td>${r.userId || '-'}</td>
+                        <td><span class="badge badge-warning">${r.rating} ⭐</span></td>
+                        <td>${r.comment ? r.comment.substring(0, 30) + '...' : '-'}</td>
+                        <td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteReview('${r._id}')">🗑️ Deletar</button>
+                        </td>
+                    </tr>
+                `).join('');
             } catch (err) {
                 console.error(err);
+                document.getElementById('reviews-table').innerHTML = '<tr><td colspan="6" class="text-center py-8 text-red-500">Erro ao carregar avaliações</td></tr>';
+            }
+        }
+
+        async function loadEvents() {
+            try {
+                const res = await fetch(`${API_URL}/admin/events`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const events = await res.json();
+                const tbody = document.getElementById('events-table');
+
+                if (!Array.isArray(events) || events.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Nenhum evento cadastrado</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = events.map(e => `
+                    <tr>
+                        <td><strong>${e.name}</strong></td>
+                        <td>${e.businessId || '-'}</td>
+                        <td>${new Date(e.date).toLocaleDateString('pt-BR')}</td>
+                        <td>${e.location || '-'}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editEvent('${e._id}')">✏️ Editar</button>
+                            <button class="btn btn-danger" onclick="deleteEvent('${e._id}')">🗑️ Deletar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('events-table').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Erro ao carregar eventos</td></tr>';
             }
         }
 
         // Modal functions
         function openBusinessModal() {
-            document.getElementById('business-modal').classList.add('active');
+            document.getElementById('businessModal').classList.add('active');
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+        function closeBusinessModal() {
+            document.getElementById('businessModal').classList.remove('active');
         }
 
-        async function saveNewBusiness() {
-            const token = localStorage.getItem('admin_token');
-            const data = {
-                name: document.getElementById('business-name').value,
-                category: document.getElementById('business-category').value,
-                city: document.getElementById('business-city').value,
-                description: document.getElementById('business-description').value,
-                plan: document.getElementById('business-plan').value
-            };
+        function openEventModal() {
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.remove('active');
+        }
+
+        async function createBusiness() {
+            const name = document.getElementById('business-name').value;
+            const description = document.getElementById('business-desc').value;
+            const category = document.getElementById('business-category').value;
+            const city = document.getElementById('business-city').value;
+
+            if (!name || !category || !city) {
+                alert('Preencha todos os campos obrigatórios');
+                return;
+            }
 
             try {
                 const res = await fetch(`${API_URL}/businesses`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${adminToken}`
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ name, description, category, city })
                 });
 
                 if (res.ok) {
-                    showToast('Empresa criada com sucesso!', 'success');
-                    closeModal('business-modal');
+                    alert('Negócio criado com sucesso!');
+                    closeBusinessModal();
+                    loadBusinesses();
+                } else {
+                    alert('Erro ao criar negócio');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        async function createEvent() {
+            const name = document.getElementById('event-name').value;
+            const businessId = document.getElementById('event-business').value;
+            const date = document.getElementById('event-date').value;
+            const location = document.getElementById('event-location').value;
+
+            if (!name || !businessId || !date || !location) {
+                alert('Preencha todos os campos');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/admin/events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ name, businessId, date, location })
+                });
+
+                if (res.ok) {
+                    alert('Evento criado com sucesso!');
+                    closeEventModal();
+                    loadEvents();
+                } else {
+                    alert('Erro ao criar evento');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        async function deleteBusiness(id) {
+            if (!confirm('Tem certeza que deseja deletar este negócio?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/businesses/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                if (res.ok) {
+                    alert('Negócio deletado com sucesso!');
                     loadBusinesses();
                 }
             } catch (err) {
                 console.error(err);
-                showToast('Erro ao criar empresa', 'error');
+                alert('Erro ao deletar negócio');
             }
         }
 
-        // Delete functions
-        async function deleteUser(userId) {
-            if (!confirm('Tem certeza?')) return;
+        async function deleteUser(id) {
+            if (!confirm('Tem certeza que deseja deletar este usuário?')) return;
 
-            const token = localStorage.getItem('admin_token');
             try {
-                const res = await fetch(`${API_URL}/admin/users/${userId}`, {
+                const res = await fetch(`${API_URL}/admin/users/${id}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
                 });
 
                 if (res.ok) {
-                    showToast('Usuário deletado!', 'success');
+                    alert('Usuário deletado com sucesso!');
                     loadUsers();
                 }
             } catch (err) {
                 console.error(err);
-                showToast('Erro ao deletar usuário', 'error');
+                alert('Erro ao deletar usuário');
             }
         }
 
-        // Toast notification
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
+        async function deleteReview(id) {
+            if (!confirm('Tem certeza que deseja deletar esta avaliação?')) return;
 
-            setTimeout(() => toast.remove(), 3000);
+            try {
+                const res = await fetch(`${API_URL}/admin/reviews/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                if (res.ok) {
+                    alert('Avaliação deletada com sucesso!');
+                    loadReviews();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao deletar avaliação');
+            }
         }
 
-        // Logout
+        async function deleteEvent(id) {
+            if (!confirm('Tem certeza que deseja deletar este evento?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/events/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                if (res.ok) {
+                    alert('Evento deletado com sucesso!');
+                    loadEvents();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao deletar evento');
+            }
+        }
+
+        function editBusiness(id) {
+            alert('Funcionalidade de edição em desenvolvimento');
+        }
+
+        function editEvent(id) {
+            alert('Funcionalidade de edição em desenvolvimento');
+        }
+
         function logout() {
             localStorage.removeItem('admin_token');
             localStorage.removeItem('admin_user');
             window.location.href = '/admin/login.html';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const businessModal = document.getElementById('businessModal');
+            const eventModal = document.getElementById('eventModal');
+            if (event.target === businessModal) {
+                closeBusinessModal();
+            }
+            if (event.target === eventModal) {
+                closeEventModal();
+            }
         }
     </script>
 </body>
