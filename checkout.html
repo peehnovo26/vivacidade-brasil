@@ -132,9 +132,7 @@
     </main>
 
     <script>
-        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? 'https://vivacidade-brasil-api.onrender.com/api'
-          : 'https://vivacidade-backend.onrender.com/api';
+        const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
         let stripe;
         let elements;
         let cardElement;
