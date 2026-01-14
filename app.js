@@ -1,7 +1,5 @@
 // Configuração da API - Auto detecta desenvolvimento vs produção
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:5000/api'
-  : 'https://vivacidade-backend.onrender.com/api';
+const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
 
 // Estado global
 let state = {
