@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - VivaCidade Brasil</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -137,7 +138,8 @@
             color: #333;
         }
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #e9ecef;
@@ -145,21 +147,11 @@
             font-family: inherit;
         }
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #0066FF;
             box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
-        }
-        .empty-state {
-            text-align: center;
-            padding: 48px 20px;
-            color: #999;
-        }
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 16px;
-            opacity: 0.5;
         }
         .badge {
             display: inline-block;
@@ -179,6 +171,18 @@
         .badge-danger {
             background: #f8d7da;
             color: #721c24;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -232,7 +236,7 @@
             <div class="p-8">
                 <!-- Header -->
                 <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">Bem-vindo ao Painel Admin</h2>
+                    <h2 class="text-3xl font-bold text-gray-800">Painel de Administração</h2>
                     <div id="admin-user" class="text-right">
                         <p class="text-gray-600 font-600">Carregando...</p>
                     </div>
@@ -259,9 +263,19 @@
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-12 p-8 rounded-lg shadow-lg">
-                        <h3 class="text-xl font-bold mb-4 text-gray-800">📈 Resumo da Plataforma</h3>
-                        <p class="text-gray-600 mb-4">Sistema completamente operacional em produção</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="chart-container">
+                            <h3 class="text-lg font-bold mb-4 text-gray-800">📊 Distribuição por Categoria</h3>
+                            <canvas id="categoriesChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3 class="text-lg font-bold mb-4 text-gray-800">🏙️ Negócios por Cidade</h3>
+                            <canvas id="citiesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-8 shadow-lg">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">✅ Status do Sistema</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
                                 <p class="font-600 text-green-800">✅ Backend: Online</p>
@@ -396,7 +410,7 @@
     <!-- Business Modal -->
     <div id="businessModal" class="modal">
         <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-6">Novo Negócio</h2>
+            <h2 class="text-2xl font-bold mb-6" id="business-modal-title">Novo Negócio</h2>
             <div class="form-group">
                 <label>Nome</label>
                 <input type="text" id="business-name" placeholder="Nome do negócio">
@@ -415,7 +429,33 @@
             </div>
             <div class="flex gap-3">
                 <button onclick="closeBusinessModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
-                <button onclick="createBusiness()" class="flex-1 btn btn-primary">Criar</button>
+                <button onclick="saveBusiness()" class="flex-1 btn btn-primary" id="business-submit-btn">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-6">Editar Usuário</h2>
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="user-name" placeholder="Nome do usuário">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="user-email" placeholder="Email" readonly>
+            </div>
+            <div class="form-group">
+                <label>Tipo</label>
+                <select id="user-role">
+                    <option value="user">Usuário</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeUserModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
+                <button onclick="saveUser()" class="flex-1 btn btn-primary">Salvar</button>
             </div>
         </div>
     </div>
@@ -423,7 +463,7 @@
     <!-- Event Modal -->
     <div id="eventModal" class="modal">
         <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-6">Novo Evento</h2>
+            <h2 class="text-2xl font-bold mb-6" id="event-modal-title">Novo Evento</h2>
             <div class="form-group">
                 <label>Nome</label>
                 <input type="text" id="event-name" placeholder="Nome do evento">
@@ -442,7 +482,7 @@
             </div>
             <div class="flex gap-3">
                 <button onclick="closeEventModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
-                <button onclick="createEvent()" class="flex-1 btn btn-primary">Criar</button>
+                <button onclick="saveEvent()" class="flex-1 btn btn-primary" id="event-submit-btn">Criar</button>
             </div>
         </div>
     </div>
@@ -451,6 +491,15 @@
         const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
         let adminToken = localStorage.getItem('admin_token');
         let adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}');
+        
+        // Estado para edição
+        let editingBusinessId = null;
+        let editingEventId = null;
+        let editingUserId = null;
+
+        // Chart instances
+        let categoriesChart = null;
+        let citiesChart = null;
 
         // Check authentication
         window.addEventListener('load', () => {
@@ -504,8 +553,77 @@
                 document.getElementById('total-users').textContent = Array.isArray(users) ? users.length : 0;
                 document.getElementById('total-reviews').textContent = Array.isArray(reviews) ? reviews.length : 0;
                 document.getElementById('total-events').textContent = Array.isArray(events) ? events.length : 0;
+
+                // Carregar gráficos
+                loadCharts(businesses);
             } catch (err) {
                 console.error('Erro ao carregar dados:', err);
+            }
+        }
+
+        function loadCharts(businesses) {
+            if (!Array.isArray(businesses)) return;
+
+            // Gráfico de categorias
+            const categories = {};
+            businesses.forEach(b => {
+                const cat = b.category || 'Sem categoria';
+                categories[cat] = (categories[cat] || 0) + 1;
+            });
+
+            const categoryCtx = document.getElementById('categoriesChart');
+            if (categoryCtx && categoriesChart) categoriesChart.destroy();
+            if (categoryCtx) {
+                categoriesChart = new Chart(categoryCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(categories),
+                        datasets: [{
+                            data: Object.values(categories),
+                            backgroundColor: [
+                                '#0066FF', '#00B4A0', '#f39c12', '#e74c3c', '#9b59b6',
+                                '#3498db', '#1abc9c', '#f1c40f', '#e67e22', '#95a5a6'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico de cidades
+            const cities = {};
+            businesses.forEach(b => {
+                const city = b.city || 'Sem cidade';
+                cities[city] = (cities[city] || 0) + 1;
+            });
+
+            const cityCtx = document.getElementById('citiesChart');
+            if (cityCtx && citiesChart) citiesChart.destroy();
+            if (cityCtx) {
+                citiesChart = new Chart(cityCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(cities),
+                        datasets: [{
+                            label: 'Negócios',
+                            data: Object.values(cities),
+                            backgroundColor: 'rgba(0, 102, 255, 0.6)',
+                            borderColor: '#0066FF',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
             }
         }
 
@@ -529,8 +647,10 @@
                         <td>${b.city || '-'}</td>
                         <td>${b.owner || '-'}</td>
                         <td>
-                            <button class="btn btn-edit" onclick="editBusiness('${b._id}')">✏️ Editar</button>
-                            <button class="btn btn-danger" onclick="deleteBusiness('${b._id}')">🗑️ Deletar</button>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="editBusiness('${b._id}', '${escapeQuotes(b.name)}', '${escapeQuotes(b.category || '')}', '${escapeQuotes(b.city || '')}', '${escapeQuotes(b.description || '')}')">✏️ Editar</button>
+                                <button class="btn btn-danger" onclick="deleteBusiness('${b._id}')">🗑️ Deletar</button>
+                            </div>
                         </td>
                     </tr>
                 `).join('');
@@ -560,7 +680,10 @@
                         <td><span class="badge ${u.role === 'admin' ? 'badge-danger' : 'badge-success'}">${u.role === 'admin' ? 'Admin' : 'Usuário'}</span></td>
                         <td>${new Date(u.createdAt).toLocaleDateString('pt-BR')}</td>
                         <td>
-                            <button class="btn btn-danger" onclick="deleteUser('${u._id}')">🗑️ Deletar</button>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="editUser('${u._id}', '${escapeQuotes(u.name)}', '${u.email}', '${u.role}')">✏️ Editar</button>
+                                <button class="btn btn-danger" onclick="deleteUser('${u._id}')">🗑️ Deletar</button>
+                            </div>
                         </td>
                     </tr>
                 `).join('');
@@ -621,8 +744,10 @@
                         <td>${new Date(e.date).toLocaleDateString('pt-BR')}</td>
                         <td>${e.location || '-'}</td>
                         <td>
-                            <button class="btn btn-edit" onclick="editEvent('${e._id}')">✏️ Editar</button>
-                            <button class="btn btn-danger" onclick="deleteEvent('${e._id}')">🗑️ Deletar</button>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="editEvent('${e._id}', '${escapeQuotes(e.name)}', '${e.businessId}', '${e.date}', '${escapeQuotes(e.location || '')}')">✏️ Editar</button>
+                                <button class="btn btn-danger" onclick="deleteEvent('${e._id}')">🗑️ Deletar</button>
+                            </div>
                         </td>
                     </tr>
                 `).join('');
@@ -632,24 +757,40 @@
             }
         }
 
-        // Modal functions
+        // Utility function to escape quotes
+        function escapeQuotes(str) {
+            return (str || '').replace(/'/g, "\\'");
+        }
+
+        // Business Modal Functions
         function openBusinessModal() {
+            editingBusinessId = null;
+            document.getElementById('business-modal-title').textContent = 'Novo Negócio';
+            document.getElementById('business-submit-btn').textContent = 'Criar';
+            document.getElementById('business-name').value = '';
+            document.getElementById('business-desc').value = '';
+            document.getElementById('business-category').value = '';
+            document.getElementById('business-city').value = '';
             document.getElementById('businessModal').classList.add('active');
         }
 
         function closeBusinessModal() {
             document.getElementById('businessModal').classList.remove('active');
+            editingBusinessId = null;
         }
 
-        function openEventModal() {
-            document.getElementById('eventModal').classList.add('active');
+        function editBusiness(id, name, category, city, desc) {
+            editingBusinessId = id;
+            document.getElementById('business-modal-title').textContent = 'Editar Negócio';
+            document.getElementById('business-submit-btn').textContent = 'Salvar';
+            document.getElementById('business-name').value = name;
+            document.getElementById('business-category').value = category;
+            document.getElementById('business-city').value = city;
+            document.getElementById('business-desc').value = desc;
+            document.getElementById('businessModal').classList.add('active');
         }
 
-        function closeEventModal() {
-            document.getElementById('eventModal').classList.remove('active');
-        }
-
-        async function createBusiness() {
+        async function saveBusiness() {
             const name = document.getElementById('business-name').value;
             const description = document.getElementById('business-desc').value;
             const category = document.getElementById('business-category').value;
@@ -661,8 +802,13 @@
             }
 
             try {
-                const res = await fetch(`${API_URL}/businesses`, {
-                    method: 'POST',
+                const method = editingBusinessId ? 'PUT' : 'POST';
+                const url = editingBusinessId 
+                    ? `${API_URL}/businesses/${editingBusinessId}`
+                    : `${API_URL}/businesses`;
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${adminToken}`
@@ -671,11 +817,12 @@
                 });
 
                 if (res.ok) {
-                    alert('Negócio criado com sucesso!');
+                    alert(editingBusinessId ? 'Negócio atualizado com sucesso!' : 'Negócio criado com sucesso!');
                     closeBusinessModal();
                     loadBusinesses();
+                    loadDashboardData();
                 } else {
-                    alert('Erro ao criar negócio');
+                    alert('Erro ao salvar negócio');
                 }
             } catch (err) {
                 console.error(err);
@@ -683,7 +830,81 @@
             }
         }
 
-        async function createEvent() {
+        // User Modal Functions
+        function editUser(id, name, email, role) {
+            editingUserId = id;
+            document.getElementById('user-name').value = name;
+            document.getElementById('user-email').value = email;
+            document.getElementById('user-role').value = role;
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+            editingUserId = null;
+        }
+
+        async function saveUser() {
+            const name = document.getElementById('user-name').value;
+            const role = document.getElementById('user-role').value;
+
+            if (!name) {
+                alert('Preencha o nome');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/admin/users/${editingUserId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ name, role })
+                });
+
+                if (res.ok) {
+                    alert('Usuário atualizado com sucesso!');
+                    closeUserModal();
+                    loadUsers();
+                } else {
+                    alert('Erro ao atualizar usuário');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        // Event Modal Functions
+        function openEventModal() {
+            editingEventId = null;
+            document.getElementById('event-modal-title').textContent = 'Novo Evento';
+            document.getElementById('event-submit-btn').textContent = 'Criar';
+            document.getElementById('event-name').value = '';
+            document.getElementById('event-business').value = '';
+            document.getElementById('event-date').value = '';
+            document.getElementById('event-location').value = '';
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.remove('active');
+            editingEventId = null;
+        }
+
+        function editEvent(id, name, businessId, date, location) {
+            editingEventId = id;
+            document.getElementById('event-modal-title').textContent = 'Editar Evento';
+            document.getElementById('event-submit-btn').textContent = 'Salvar';
+            document.getElementById('event-name').value = name;
+            document.getElementById('event-business').value = businessId;
+            document.getElementById('event-date').value = date.slice(0, 16);
+            document.getElementById('event-location').value = location;
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        async function saveEvent() {
             const name = document.getElementById('event-name').value;
             const businessId = document.getElementById('event-business').value;
             const date = document.getElementById('event-date').value;
@@ -695,8 +916,13 @@
             }
 
             try {
-                const res = await fetch(`${API_URL}/admin/events`, {
-                    method: 'POST',
+                const method = editingEventId ? 'PUT' : 'POST';
+                const url = editingEventId 
+                    ? `${API_URL}/admin/events/${editingEventId}`
+                    : `${API_URL}/admin/events`;
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${adminToken}`
@@ -705,11 +931,12 @@
                 });
 
                 if (res.ok) {
-                    alert('Evento criado com sucesso!');
+                    alert(editingEventId ? 'Evento atualizado com sucesso!' : 'Evento criado com sucesso!');
                     closeEventModal();
                     loadEvents();
+                    loadDashboardData();
                 } else {
-                    alert('Erro ao criar evento');
+                    alert('Erro ao salvar evento');
                 }
             } catch (err) {
                 console.error(err);
@@ -717,6 +944,7 @@
             }
         }
 
+        // Delete functions
         async function deleteBusiness(id) {
             if (!confirm('Tem certeza que deseja deletar este negócio?')) return;
 
@@ -729,6 +957,7 @@
                 if (res.ok) {
                     alert('Negócio deletado com sucesso!');
                     loadBusinesses();
+                    loadDashboardData();
                 }
             } catch (err) {
                 console.error(err);
@@ -767,6 +996,7 @@
                 if (res.ok) {
                     alert('Avaliação deletada com sucesso!');
                     loadReviews();
+                    loadDashboardData();
                 }
             } catch (err) {
                 console.error(err);
@@ -786,19 +1016,12 @@
                 if (res.ok) {
                     alert('Evento deletado com sucesso!');
                     loadEvents();
+                    loadDashboardData();
                 }
             } catch (err) {
                 console.error(err);
                 alert('Erro ao deletar evento');
             }
-        }
-
-        function editBusiness(id) {
-            alert('Funcionalidade de edição em desenvolvimento');
-        }
-
-        function editEvent(id) {
-            alert('Funcionalidade de edição em desenvolvimento');
         }
 
         function logout() {
@@ -810,13 +1033,12 @@
         // Close modals when clicking outside
         window.onclick = function(event) {
             const businessModal = document.getElementById('businessModal');
+            const userModal = document.getElementById('userModal');
             const eventModal = document.getElementById('eventModal');
-            if (event.target === businessModal) {
-                closeBusinessModal();
-            }
-            if (event.target === eventModal) {
-                closeEventModal();
-            }
+            
+            if (event.target === businessModal) closeBusinessModal();
+            if (event.target === userModal) closeUserModal();
+            if (event.target === eventModal) closeEventModal();
         }
     </script>
 </body>
