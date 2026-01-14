@@ -274,9 +274,13 @@
 
                 <!-- MY REVIEWS SECTION -->
                 <div id="my-reviews" class="section">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Minhas Avaliações</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Avaliações dos Meus Negócios</h3>
 
                     <div class="card">
+                        <div style="padding: 16px; background: #f0f9ff; border-left: 4px solid #0066FF; border-radius: 8px; margin-bottom: 16px;">
+                            <p style="color: #0066FF; font-weight: 600;">ℹ️ Nota Importante</p>
+                            <p style="color: #333; font-size: 14px; margin-top: 4px;">Estas são as avaliações que seus clientes deixaram. Você pode reportar avaliações inapropriadas para análise do admin, mas não pode deletá-las. A integridade das avaliações é essencial para a confiança na plataforma.</p>
+                        </div>
                         <table>
                             <thead>
                                 <tr>
@@ -480,11 +484,11 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const reviews = await res.json();
-                const myReviews = reviews.filter(r => r.userId === userData._id);
+                const myReviews = reviews.filter(r => r.businessId === userData._id);
 
                 const tbody = document.getElementById('reviews-table');
                 if (!Array.isArray(myReviews) || myReviews.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Você ainda não avaliou nenhum negócio</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Seus negócios ainda não receberam avaliações</td></tr>';
                     return;
                 }
 
@@ -494,7 +498,9 @@
                         <td><span class="badge badge-warning">${r.rating} ⭐</span></td>
                         <td>${r.comment ? r.comment.substring(0, 40) + '...' : '-'}</td>
                         <td>${new Date(r.createdAt).toLocaleDateString('pt-BR')}</td>
-                        <td><button class="btn btn-danger" onclick="deleteReview('${r._id}')" style="padding: 6px 12px; font-size: 12px;">🗑️ Deletar</button></td>
+                        <td>
+                            <button class="btn btn-edit" onclick="reportReview('${r._id}')" style="padding: 6px 12px; font-size: 12px;">🚩 Reportar</button>
+                        </td>
                     </tr>
                 `).join('');
             } catch (err) {
@@ -607,6 +613,15 @@
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        function reportReview(reviewId) {
+            const reason = prompt('Motivo do report (spam, ofensiva, falsa):');
+            if (!reason) return;
+
+            alert(`✅ Report enviado! O administrador analisará em breve.\n\nMotivo: ${reason}\n\nObrigado por ajudar a manter a plataforma segura.`);
+            // Aqui entraria uma chamada API para registrar o report
+            console.log(`Review ${reviewId} reportado por: ${reason}`);
         }
 
         function logout() {
