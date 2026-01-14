@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VivaCidade Brasil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    .gradient-primary {
+      background: linear-gradient(135deg, #0066FF 0%, #00B4A0 50%, #00D4AA 100%);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .search-glow {
+      box-shadow: 0 4px 40px rgba(0, 102, 255, 0.15), 0 8px 60px rgba(0, 180, 160, 0.1);
+    }
+    
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0, 102, 255, 0.15);
+    }
+    
+    .city-card {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .city-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.8) 100%);
+      z-index: 1;
+    }
+    
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .star-filled { color: #FFB800; }
+    .star-empty { color: #E0E0E0; }
+    
+    .tab-active {
+      background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+      color: white;
+    }
+    
+    .pulse-dot {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+    }
+    
+    .smooth-scroll {
+      scroll-behavior: smooth;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #0066FF, #00B4A0);
+      border-radius: 4px;
+    }
+    
+    .category-icon {
+      transition: all 0.3s ease;
+    }
+    
+    .category-card:hover .category-icon {
+      transform: scale(1.1);
+    }
+    
+    .featured-badge {
+      background: linear-gradient(135deg, #FFB800 0%, #FF8C00 100%);
+    }
+    
+    .plan-elite {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    .plan-plus {
+      background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+    }
+    
+    .modal-overlay {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full bg-slate-50 smooth-scroll overflow-auto">
+  <div id="app" class="min-h-full w-full"><!-- Header -->
+   <header class="fixed top-0 left-0 right-0 z-50 glass-card border-b border-slate-200/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex items-center justify-between h-16 sm:h-20"><!-- Logo -->
+      <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('home')">
+       <div class="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+       </div>
+       <div><span class="text-xl font-bold gradient-text">VivaCidade</span> <span class="text-xs text-slate-500 block -mt-1">Brasil</span>
+       </div>
+      </div><!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-1"><button onclick="navigateTo('home')" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">Início</button> <button onclick="navigateTo('cities')" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">Cidades</button> <button onclick="navigateTo('categories')" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">Categorias</button> <button onclick="navigateTo('events')" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">Eventos</button> <button onclick="navigateTo('favorites')" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center gap-1">
+        <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg> Favoritos <span id="favorites-count" class="hidden bg-rose-500 text-white text-xs px-1.5 py-0.5 rounded-full">0</span> </button> <button onclick="window.location.href='/plans.html'" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">💰 Planos</button>
+      </nav><!-- Right Actions -->
+      <div class="flex items-center gap-3"><button onclick="window.location.href='/register-business.html'" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white gradient-primary hover:opacity-90 transition-all shadow-lg shadow-blue-500/25">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg> Para Empresas </button> <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg></button>
+      </div>
+     </div>
+    </div><!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white">
+     <div class="px-4 py-3 space-y-1"><button onclick="navigateTo('home'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Início</button> <button onclick="navigateTo('cities'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Cidades</button> <button onclick="navigateTo('categories'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Categorias</button> <button onclick="navigateTo('events'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Eventos</button> <button onclick="navigateTo('favorites'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Favoritos</button> <button onclick="window.location.href='/plans.html'; toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">💰 Planos</button> <button onclick="window.location.href='/register-business.html'" class="w-full text-left px-4 py-3 rounded-lg text-sm font-semibold text-white gradient-primary">Para Empresas</button>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main id="main-content" class="pt-16 sm:pt-20"><!-- HOME PAGE -->
+    <div id="page-home"><!-- Hero Section -->
+     <section class="relative overflow-hidden gradient-primary">
+      <div class="absolute inset-0 opacity-10">
+       <svg class="w-full h-full" viewbox="0 0 100 100" preserveaspectratio="none"><defs>
+         <pattern id="grid" width="10" height="10" patternunits="userSpaceOnUse">
+          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" />
+         </pattern>
+        </defs> <rect width="100" height="100" fill="url(#grid)" />
+       </svg>
+      </div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
+       <div class="text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-medium mb-6"><span class="w-2 h-2 bg-green-400 rounded-full pulse-dot"></span> Sul Fluminense • Rio de Janeiro
+        </div>
+        <h1 id="hero-title" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">Descubra. Visite. Viva.</h1>
+        <p id="hero-subtitle" class="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-10">Seu guia completo para explorar Quatis, Porto Real, Resende, Itatiaia e Barra Mansa. Encontre os melhores lugares, eventos e experiências.</p><!-- Search Box -->
+        <div class="max-w-3xl mx-auto">
+         <div class="glass-card rounded-2xl p-2 search-glow">
+          <div class="flex flex-col sm:flex-row gap-2">
+           <div class="flex-1 relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg><input id="search-input" type="text" placeholder="O que você procura?" class="w-full pl-12 pr-4 py-4 rounded-xl bg-slate-50 border-0 focus:ring-2 focus:ring-blue-500 text-slate-800 placeholder-slate-400">
+           </div>
+           <div class="relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            </svg><select id="city-select" class="w-full sm:w-48 pl-12 pr-4 py-4 rounded-xl bg-slate-50 border-0 focus:ring-2 focus:ring-blue-500 text-slate-800 appearance-none cursor-pointer"> <option value="">Todas as cidades</option> <option value="quatis">Quatis</option> <option value="porto-real">Porto Real</option> <option value="resende">Resende</option> <option value="itatiaia">Itatiaia</option> <option value="barra-mansa">Barra Mansa</option> </select>
+           </div><button id="cta-button" onclick="performSearch()" class="px-8 py-4 rounded-xl font-semibold text-white gradient-primary hover:opacity-90 transition-all shadow-lg"> Explorar Agora </button>
+          </div>
+         </div><!-- Quick Filters -->
+         <div class="flex flex-wrap justify-center gap-2 mt-6"><button onclick="filterByCategory('hospedagem')" class="px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-all">🏨 Hospedagem</button> <button onclick="filterByCategory('gastronomia')" class="px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-all">🍽️ Gastronomia</button> <button onclick="filterByCategory('turismo')" class="px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-all">🏞️ Turismo</button> <button onclick="filterByCategory('eventos')" class="px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-all">🎉 Eventos</button> <button onclick="filterByCategory('servicos')" class="px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-all">🛒 Serviços</button>
+         </div>
+        </div>
+       </div>
+      </div><!-- Wave Decoration -->
+      <div class="absolute bottom-0 left-0 right-0">
+       <svg viewbox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8fafc" />
+       </svg>
+      </div>
+     </section><!-- Featured Sponsors -->
+     <section class="py-12 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+       <div class="flex items-center justify-between mb-8">
+        <div><span class="inline-flex items-center gap-2 text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2"> <span class="featured-badge px-2 py-1 rounded text-white">⭐ Patrocinado</span> </span>
+         <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Destaques da Semana</h2>
+        </div><button class="hidden sm:flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700"> Ver todos 
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+         </svg></button>
+       </div>
+       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Featured Card 1 -->
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('hotel-fazenda')">
+         <div class="relative h-48 gradient-primary">
+          <div class="absolute inset-0 flex items-center justify-center">
+           <svg class="w-20 h-20 text-white/30" fill="currentColor" viewbox="0 0 24 24">
+            <path d="M19 7h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z" />
+           </svg>
+          </div>
+          <div class="absolute top-3 left-3"><span class="featured-badge px-3 py-1 rounded-full text-xs font-semibold text-white">ELITE</span>
+          </div>
+          <div class="absolute top-3 right-3"><button onclick="event.stopPropagation(); toggleFavorite('hotel-fazenda', 'Hotel Fazenda Serra Verde', 'Itatiaia', 'Hospedagem', 4.9)" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="hotel-fazenda">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg></button>
+          </div>
+         </div>
+         <div class="p-5">
+          <div class="flex items-start justify-between mb-2">
+           <h3 class="font-bold text-lg text-slate-900">Hotel Fazenda Serra Verde</h3>
+           <div class="flex items-center gap-1 text-sm"><span class="star-filled">★</span> <span class="font-semibold text-slate-900">4.9</span>
+           </div>
+          </div>
+          <p class="text-slate-500 text-sm mb-3">📍 Itatiaia • Hospedagem</p>
+          <p class="text-slate-600 text-sm mb-4">Experiência única na Serra da Mantiqueira com piscina natural e trilhas exclusivas.</p>
+          <div class="flex items-center justify-between"><span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-3 py-1 rounded-full">🔥 20% OFF esta semana</span> <span class="text-slate-400 text-sm">128 avaliações</span>
+          </div>
+         </div>
+        </div><!-- Featured Card 2 -->
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('restaurante-sabor')">
+         <div class="relative h-48 bg-gradient-to-br from-orange-400 to-rose-500">
+          <div class="absolute inset-0 flex items-center justify-center">
+           <svg class="w-20 h-20 text-white/30" fill="currentColor" viewbox="0 0 24 24">
+            <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
+           </svg>
+          </div>
+          <div class="absolute top-3 left-3"><span class="bg-blue-600 px-3 py-1 rounded-full text-xs font-semibold text-white">PLUS</span>
+          </div>
+          <div class="absolute top-3 right-3"><button onclick="event.stopPropagation(); toggleFavorite('restaurante-sabor', 'Sabor da Serra', 'Resende', 'Gastronomia', 4.8)" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="restaurante-sabor">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg></button>
+          </div>
+         </div>
+         <div class="p-5">
+          <div class="flex items-start justify-between mb-2">
+           <h3 class="font-bold text-lg text-slate-900">Sabor da Serra</h3>
+           <div class="flex items-center gap-1 text-sm"><span class="star-filled">★</span> <span class="font-semibold text-slate-900">4.8</span>
+           </div>
+          </div>
+          <p class="text-slate-500 text-sm mb-3">📍 Resende • Gastronomia</p>
+          <p class="text-slate-600 text-sm mb-4">Culinária regional com ingredientes orgânicos da fazenda própria.</p>
+          <div class="flex items-center justify-between"><span class="text-xs text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full">🍽️ Menu degustação</span> <span class="text-slate-400 text-sm">96 avaliações</span>
+          </div>
+         </div>
+        </div><!-- Featured Card 3 -->
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('parque-nacional')">
+         <div class="relative h-48 bg-gradient-to-br from-emerald-400 to-teal-600">
+          <div class="absolute inset-0 flex items-center justify-center">
+           <svg class="w-20 h-20 text-white/30" fill="currentColor" viewbox="0 0 24 24">
+            <path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z" />
+           </svg>
+          </div>
+          <div class="absolute top-3 left-3"><span class="featured-badge px-3 py-1 rounded-full text-xs font-semibold text-white">ELITE</span>
+          </div>
+          <div class="absolute top-3 right-3"><button onclick="event.stopPropagation(); toggleFavorite('parque-nacional', 'Parque Nacional do Itatiaia', 'Itatiaia', 'Turismo', 4.9)" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="parque-nacional">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg></button>
+          </div>
+         </div>
+         <div class="p-5">
+          <div class="flex items-start justify-between mb-2">
+           <h3 class="font-bold text-lg text-slate-900">Parque Nacional do Itatiaia</h3>
+           <div class="flex items-center gap-1 text-sm"><span class="star-filled">★</span> <span class="font-semibold text-slate-900">4.9</span>
+           </div>
+          </div>
+          <p class="text-slate-500 text-sm mb-3">📍 Itatiaia • Turismo e Lazer</p>
+          <p class="text-slate-600 text-sm mb-4">O primeiro parque nacional do Brasil com trilhas incríveis e cachoeiras.</p>
+          <div class="flex items-center justify-between"><span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-3 py-1 rounded-full">🥾 Trilhas guiadas</span> <span class="text-slate-400 text-sm">312 avaliações</span>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Cities Section -->
+     <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+       <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Explore Nossas Cidades</h2>
+        <p class="text-slate-600 max-w-2xl mx-auto">Cinco destinos incríveis no Sul Fluminense esperando por você. Cada cidade com sua história, cultura e experiências únicas.</p>
+       </div>
+       <div class="grid grid-cols-2 lg:grid-cols-5 gap-4"><!-- Quatis -->
+        <div onclick="selectCity('quatis')" class="city-card rounded-2xl h-64 lg:h-80 card-hover cursor-pointer bg-gradient-to-br from-blue-500 to-blue-700">
+         <div class="absolute inset-0 flex items-center justify-center opacity-20"><span class="text-8xl">🏘️</span>
+         </div>
+         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <h3 class="text-xl font-bold text-white mb-1">Quatis</h3>
+          <p class="text-white/80 text-sm">42 locais</p>
+         </div>
+        </div><!-- Porto Real -->
+        <div onclick="selectCity('porto-real')" class="city-card rounded-2xl h-64 lg:h-80 card-hover cursor-pointer bg-gradient-to-br from-indigo-500 to-purple-700">
+         <div class="absolute inset-0 flex items-center justify-center opacity-20"><span class="text-8xl">🏭</span>
+         </div>
+         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <h3 class="text-xl font-bold text-white mb-1">Porto Real</h3>
+          <p class="text-white/80 text-sm">38 locais</p>
+         </div>
+        </div><!-- Resende -->
+        <div onclick="selectCity('resende')" class="city-card rounded-2xl h-64 lg:h-80 card-hover cursor-pointer bg-gradient-to-br from-teal-500 to-emerald-700">
+         <div class="absolute inset-0 flex items-center justify-center opacity-20"><span class="text-8xl">🌆</span>
+         </div>
+         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <h3 class="text-xl font-bold text-white mb-1">Resende</h3>
+          <p class="text-white/80 text-sm">156 locais</p>
+         </div>
+        </div><!-- Itatiaia -->
+        <div onclick="selectCity('itatiaia')" class="city-card rounded-2xl h-64 lg:h-80 card-hover cursor-pointer bg-gradient-to-br from-emerald-500 to-green-700">
+         <div class="absolute inset-0 flex items-center justify-center opacity-20"><span class="text-8xl">⛰️</span>
+         </div>
+         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <h3 class="text-xl font-bold text-white mb-1">Itatiaia</h3>
+          <p class="text-white/80 text-sm">89 locais</p>
+         </div>
+        </div><!-- Barra Mansa -->
+        <div onclick="selectCity('barra-mansa')" class="city-card rounded-2xl h-64 lg:h-80 card-hover cursor-pointer col-span-2 lg:col-span-1 bg-gradient-to-br from-cyan-500 to-blue-700">
+         <div class="absolute inset-0 flex items-center justify-center opacity-20"><span class="text-8xl">🌉</span>
+         </div>
+         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <h3 class="text-xl font-bold text-white mb-1">Barra Mansa</h3>
+          <p class="text-white/80 text-sm">124 locais</p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Categories Section -->
+     <section class="py-16 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+       <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Categorias</h2>
+        <p class="text-slate-600">Encontre exatamente o que você procura</p>
+       </div>
+       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"><!-- Hospedagem -->
+        <div onclick="filterByCategory('hospedagem')" class="category-card glass-card rounded-2xl p-6 text-center card-hover cursor-pointer">
+         <div class="category-icon w-16 h-16 mx-auto mb-4 rounded-2xl gradient-primary flex items-center justify-center"><span class="text-3xl">🏨</span>
+         </div>
+         <h3 class="font-semibold text-slate-900 mb-1">Hospedagem</h3>
+         <p class="text-sm text-slate-500">87 locais</p>
+        </div><!-- Gastronomia -->
+        <div onclick="filterByCategory('gastronomia')" class="category-card glass-card rounded-2xl p-6 text-center card-hover cursor-pointer">
+         <div class="category-icon w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-orange-400 to-rose-500 flex items-center justify-center"><span class="text-3xl">🍽️</span>
+         </div>
+         <h3 class="font-semibold text-slate-900 mb-1">Gastronomia</h3>
+         <p class="text-sm text-slate-500">156 locais</p>
+        </div><!-- Turismo -->
+        <div onclick="filterByCategory('turismo')" class="category-card glass-card rounded-2xl p-6 text-center card-hover cursor-pointer">
+         <div class="category-icon w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center"><span class="text-3xl">🏞️</span>
+         </div>
+         <h3 class="font-semibold text-slate-900 mb-1">Turismo e Lazer</h3>
+         <p class="text-sm text-slate-500">64 locais</p>
+        </div><!-- Eventos -->
+        <div onclick="filterByCategory('eventos')" class="category-card glass-card rounded-2xl p-6 text-center card-hover cursor-pointer">
+         <div class="category-icon w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center"><span class="text-3xl">🎉</span>
+         </div>
+         <h3 class="font-semibold text-slate-900 mb-1">Eventos</h3>
+         <p class="text-sm text-slate-500">28 eventos</p>
+        </div><!-- Comércio -->
+        <div onclick="filterByCategory('servicos')" class="category-card glass-card rounded-2xl p-6 text-center card-hover cursor-pointer">
+         <div class="category-icon w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center"><span class="text-3xl">🛒</span>
+         </div>
+         <h3 class="font-semibold text-slate-900 mb-1">Comércio e Serviços</h3>
+         <p class="text-sm text-slate-500">214 locais</p>
+        </div>
+       </div>
+      </div>
+     </section><!-- Top Rated Section -->
+     <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+       <div class="flex items-center justify-between mb-8">
+        <div>
+         <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Mais Bem Avaliados</h2>
+         <p class="text-slate-600 mt-1">Os favoritos dos visitantes</p>
+        </div><button class="hidden sm:flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700"> Ver todos 
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+         </svg></button>
+       </div>
+       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="top-rated-grid"><!-- These cards will be populated -->
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('pousada-vista')">
+         <div class="relative h-40 bg-gradient-to-br from-sky-400 to-blue-600">
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl opacity-30">🏡</span>
+          </div>
+          <div class="absolute top-3 right-3"><button onclick="event.stopPropagation(); toggleFavorite('pousada-vista', 'Pousada Vista Linda', 'Quatis', 'Hospedagem', 4.8)" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="pousada-vista">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg></button>
+          </div>
+         </div>
+         <div class="p-4">
+          <div class="flex items-center gap-1 mb-2"><span class="star-filled text-sm">★★★★★</span> <span class="text-sm font-medium text-slate-700">4.8</span>
+          </div>
+          <h3 class="font-bold text-slate-900 mb-1">Pousada Vista Linda</h3>
+          <p class="text-slate-500 text-sm">📍 Quatis • Hospedagem</p>
+         </div>
+        </div>
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('cafe-colonial')">
+         <div class="relative h-40 bg-gradient-to-br from-amber-400 to-orange-500">
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl opacity-30">☕</span>
+          </div>
+          <div class="absolute top-3 right-3"><button onclick="event.stopPropagation(); toggleFavorite('cafe-colonial', 'Café Colonial da Serra', 'Itatiaia', 'Gastronomia', 4.9)" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="cafe-colonial">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg></button>
+          </div>
+         </div>
+         <div class="p-4">
+          <div class="flex items-center gap-1 mb-2"><span class="star-filled text-sm">★★★★★</span> <span class="text-sm font-medium text-slate-700">4.9</span>
+          </div>
+          <h3 class="font-bold text-slate-900 mb-1">Café Colonial da Serra</h3>
+          <p class="text-slate-500 text-sm">📍 Itatiaia • Gastronomia</p>
+         </div>
+        </div>
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('cachoeira-escondida')">
+         <div class="relative h-40 bg-gradient-to-br from-emerald-400 to-cyan-600">
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl opacity-30">💧</span>
+          </div>
+          <div class="absolute top-3 right-3"><button onclick="event.stopPropagation(); toggleFavorite('cachoeira-escondida', 'Cachoeira Escondida', 'Resende', 'Turismo', 4.7)" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="cachoeira-escondida">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg></button>
+          </div>
+         </div>
+         <div class="p-4">
+          <div class="flex items-center gap-1 mb-2"><span class="star-filled text-sm">★★★★</span><span class="star-empty text-sm">★</span> <span class="text-sm font-medium text-slate-700">4.7</span>
+          </div>
+          <h3 class="font-bold text-slate-900 mb-1">Cachoeira Escondida</h3>
+          <p class="text-slate-500 text-sm">���� Resende • Turismo</p>
+         </div>
+        </div>
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('academia-corpo')">
+         <div class="relative h-40 bg-gradient-to-br from-rose-400 to-pink-600">
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl opacity-30">💪</span>
+          </div>
+          <div class="absolute top-3 right-3"><button onclick="event.stopPropagation(); toggleFavorite('academia-corpo', 'Academia Corpo e Mente', 'Barra Mansa', 'Serviços', 4.6)" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="academia-corpo">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg></button>
+          </div>
+         </div>
+         <div class="p-4">
+          <div class="flex items-center gap-1 mb-2"><span class="star-filled text-sm">★★★★</span><span class="star-empty text-sm">★</span> <span class="text-sm font-medium text-slate-700">4.6</span>
+          </div>
+          <h3 class="font-bold text-slate-900 mb-1">Academia Corpo e Mente</h3>
+          <p class="text-slate-500 text-sm">���� Barra Mansa • Serviços</p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Events Section -->
+     <section class="py-16 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+       <div class="flex items-center justify-between mb-8">
+        <div>
+         <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Próximos Eventos</h2>
+         <p class="text-slate-600 mt-1">Não perca o que está acontecendo na região</p>
+        </div><button onclick="navigateTo('events')" class="hidden sm:flex items-center gap-2 text-blue-600 font-medium hover:text-blue-700"> Ver agenda completa 
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+         </svg></button>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Event 1 -->
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer">
+         <div class="relative h-48 bg-gradient-to-br from-purple-500 to-pink-600">
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-6xl opacity-30">🎵</span>
+          </div>
+          <div class="absolute top-3 left-3 bg-white rounded-xl p-2 text-center shadow-lg"><span class="block text-xs text-slate-500 font-medium">JAN</span> <span class="block text-2xl font-bold text-slate-900">25</span>
+          </div>
+         </div>
+         <div class="p-5"><span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 mb-3">Música</span>
+          <h3 class="font-bold text-lg text-slate-900 mb-2">Festival de Jazz da Serra</h3>
+          <p class="text-slate-500 text-sm mb-3">📍 Penedo, Itatiaia • 19h</p>
+          <div class="flex items-center justify-between"><span class="text-sm font-semibold text-emerald-600">Entrada Gratuita</span> <button class="text-blue-600 text-sm font-medium hover:text-blue-700">Saiba mais →</button>
+          </div>
+         </div>
+        </div><!-- Event 2 -->
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer">
+         <div class="relative h-48 bg-gradient-to-br from-orange-400 to-red-500">
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-6xl opacity-30">🍷</span>
+          </div>
+          <div class="absolute top-3 left-3 bg-white rounded-xl p-2 text-center shadow-lg"><span class="block text-xs text-slate-500 font-medium">FEV</span> <span class="block text-2xl font-bold text-slate-900">02</span>
+          </div>
+         </div>
+         <div class="p-5"><span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 mb-3">Gastronomia</span>
+          <h3 class="font-bold text-lg text-slate-900 mb-2">Feira de Vinhos e Queijos</h3>
+          <p class="text-slate-500 text-sm mb-3">📍 Centro, Resende • 14h</p>
+          <div class="flex items-center justify-between"><span class="text-sm font-semibold text-slate-600">R$ 30,00</span> <button class="text-blue-600 text-sm font-medium hover:text-blue-700">Saiba mais →</button>
+          </div>
+         </div>
+        </div><!-- Event 3 -->
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer">
+         <div class="relative h-48 bg-gradient-to-br from-green-400 to-emerald-600">
+          <div class="absolute inset-0 flex items-center justify-center"><span class="text-6xl opacity-30">🏃</span>
+          </div>
+          <div class="absolute top-3 left-3 bg-white rounded-xl p-2 text-center shadow-lg"><span class="block text-xs text-slate-500 font-medium">FEV</span> <span class="block text-2xl font-bold text-slate-900">15</span>
+          </div>
+         </div>
+         <div class="p-5"><span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 mb-3">Esportes</span>
+          <h3 class="font-bold text-lg text-slate-900 mb-2">Corrida Trail Mantiqueira</h3>
+          <p class="text-slate-500 text-sm mb-3">📍 Parque Nacional, Itatiaia • 6h</p>
+          <div class="flex items-center justify-between"><span class="text-sm font-semibold text-slate-600">R$ 150,00</span> <button class="text-blue-600 text-sm font-medium hover:text-blue-700">Inscreva-se →</button>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- CTA Section -->
+     <section class="py-20 gradient-primary relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10">
+       <svg class="w-full h-full" viewbox="0 0 100 100" preserveaspectratio="none"><circle cx="20" cy="20" r="30" fill="white" /> <circle cx="80" cy="80" r="40" fill="white" />
+       </svg>
+      </div>
+      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+       <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">Tem um negócio na região?</h2>
+       <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">Cadastre sua empresa no VivaCidade Brasil e alcance milhares de turistas e moradores que buscam os melhores lugares da região.</p>
+       <div class="flex flex-col sm:flex-row gap-4 justify-center"><button onclick="window.location.href='/register-business.html'" class="px-8 py-4 rounded-xl font-semibold text-blue-600 bg-white hover:bg-slate-100 transition-all shadow-xl"> Cadastrar Minha Empresa </button> <button onclick="window.location.href='/plans.html'" class="px-8 py-4 rounded-xl font-semibold text-white border-2 border-white/30 hover:bg-white/10 transition-all"> Ver Planos e Preços </button>
+       </div>
+      </div>
+     </section>
+    </div><!-- FAVORITES PAGE -->
+    <div id="page-favorites" class="hidden">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-8">
+       <h1 class="text-3xl font-bold text-slate-900 mb-2">Meus Favoritos</h1>
+       <p class="text-slate-600">Locais que você salvou para visitar</p>
+      </div>
+      <div id="favorites-container">
+       <div id="favorites-empty" class="text-center py-16">
+        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center">
+         <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+         </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-700 mb-2">Nenhum favorito ainda</h3>
+        <p class="text-slate-500 mb-6">Comece a explorar e salve os lugares que mais gostar!</p><button onclick="navigateTo('home')" class="px-6 py-3 rounded-xl font-semibold text-white gradient-primary hover:opacity-90 transition-all"> Explorar Lugares </button>
+       </div>
+       <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+      </div>
+     </div>
+    </div><!-- BUSINESS PAGE -->
+    <div id="page-business" class="hidden">
+     <div class="gradient-primary py-16">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+       <h1 class="text-4xl font-bold text-white mb-4">Cresça com o VivaCidade</h1>
+       <p class="text-xl text-white/90">Conecte seu negócio a milhares de turistas e moradores da região Sul Fluminense</p>
+      </div>
+     </div>
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"><!-- Stats -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+       <div class="glass-card rounded-2xl p-6 text-center">
+        <div class="text-4xl font-bold gradient-text mb-2">
+         50K+
+        </div>
+        <div class="text-slate-600">
+         Visitantes mensais
+        </div>
+       </div>
+       <div class="glass-card rounded-2xl p-6 text-center">
+        <div class="text-4xl font-bold gradient-text mb-2">
+         500+
+        </div>
+        <div class="text-slate-600">
+         Empresas cadastradas
+        </div>
+       </div>
+       <div class="glass-card rounded-2xl p-6 text-center">
+        <div class="text-4xl font-bold gradient-text mb-2">
+         5
+        </div>
+        <div class="text-slate-600">
+         Cidades atendidas
+        </div>
+       </div>
+       <div class="glass-card rounded-2xl p-6 text-center">
+        <div class="text-4xl font-bold gradient-text mb-2">
+         98%
+        </div>
+        <div class="text-slate-600">
+         Satisfação
+        </div>
+       </div>
+      </div><!-- Plans -->
+      <h2 class="text-3xl font-bold text-slate-900 text-center mb-4">Escolha seu Plano</h2>
+      <p class="text-slate-600 text-center mb-12">Comece gratuitamente e escale conforme seu negócio cresce</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"><!-- Start Plan -->
+       <div class="glass-card rounded-3xl p-8 border-2 border-slate-200">
+        <div class="text-center mb-8">
+         <h3 class="text-xl font-bold text-slate-900 mb-2">Start</h3>
+         <div class="text-4xl font-bold text-slate-900 mb-1">
+          R$ 29,90<span class="text-lg font-normal text-slate-500">/mês</span>
+         </div>
+         <p class="text-slate-500 text-sm">Pequenos comércios locais</p>
+        </div>
+        <ul class="space-y-4 mb-8">
+         <li class="flex items-center gap-3 text-slate-600">
+          <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Cadastro em 1 cidade</li>
+         <li class="flex items-center gap-3 text-slate-600">
+          <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Perfil básico completo</li>
+         <li class="flex items-center gap-3 text-slate-600">
+          <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> 1 imagem principal</li>
+         <li class="flex items-center gap-3 text-slate-600">
+          <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Botão de contato direto</li>
+         <li class="flex items-center gap-3 text-slate-600">
+          <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Presença nas buscas</li>
+         <li class="flex items-center gap-3 text-slate-600">
+          <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Painel de atualizações</li>
+        </ul><button class="w-full py-3 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all"> Começar Agora </button>
+       </div><!-- Plus Plan -->
+       <div class="plan-plus rounded-3xl p-8 text-white transform scale-105 shadow-2xl relative">
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-white rounded-full text-sm font-semibold text-blue-600 shadow-lg">
+         Mais Popular
+        </div>
+        <div class="text-center mb-8">
+         <h3 class="text-xl font-bold mb-2">Plus</h3>
+         <div class="text-4xl font-bold mb-1">
+          R$ 49,90<span class="text-lg font-normal text-white/70">/mês</span>
+         </div>
+         <p class="text-white/70 text-sm">Mais visibilidade e profissionalismo</p>
+        </div>
+        <ul class="space-y-4 mb-8">
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-white flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Tudo do Start +</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-white flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Cadastro em até 2 cidades</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-white flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Até 6 imagens</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-white flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Links para redes sociais</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-white flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Prioridade nas buscas</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-white flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Estatísticas + promoções</li>
+        </ul><button class="w-full py-3 rounded-xl font-semibold text-blue-600 bg-white hover:bg-slate-100 transition-all"> Escolher Plus </button>
+       </div><!-- Elite Plan -->
+       <div class="plan-elite rounded-3xl p-8 text-white">
+        <div class="text-center mb-8">
+         <h3 class="text-xl font-bold mb-2">Elite</h3>
+         <div class="text-4xl font-bold mb-1">
+          R$ 79,90<span class="text-lg font-normal text-white/70">/mês</span>
+         </div>
+         <p class="text-white/70 text-sm">Máxima exposição e autoridade</p>
+        </div>
+        <ul class="space-y-4 mb-8">
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Tudo do Plus +</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Todas as 5 cidades</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Galeria + vídeo institucional</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Selo Elite + destaque no topo</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Banners patrocinados</li>
+         <li class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg> Relatórios + suporte prioritário</li>
+        </ul><button class="w-full py-3 rounded-xl font-semibold text-slate-900 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 transition-all"> Escolher Elite </button>
+       </div>
+      </div>
+     </div>
+    </div><!-- LISTING DETAIL PAGE -->
+    <div id="page-listing" class="hidden">
+     <div id="listing-content"></div>
+    </div><!-- SEARCH RESULTS PAGE -->
+    <div id="page-search" class="hidden">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="mb-8">
+       <h1 id="search-title" class="text-3xl font-bold text-slate-900 mb-2">Resultados da Busca</h1>
+       <p id="search-subtitle" class="text-slate-600"></p>
+      </div><!-- Filters -->
+      <div class="flex flex-wrap gap-3 mb-8"><select class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm"> <option>Todas as categorias</option> <option>Hospedagem</option> <option>Gastronomia</option> <option>Turismo</option> <option>Eventos</option> <option>Serviços</option> </select> <select class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm"> <option>Todas as cidades</option> <option>Quatis</option> <option>Porto Real</option> <option>Resende</option> <option>Itatiaia</option> <option>Barra Mansa</option> </select> <select class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm"> <option>Ordenar por relevância</option> <option>Melhor avaliação</option> <option>Mais recentes</option> </select>
+      </div>
+      <div id="search-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+     </div>
+    </div>
+   </main><!-- Footer -->
+   <footer class="bg-slate-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+      <div class="col-span-2 md:col-span-1">
+       <div class="flex items-center gap-2 mb-4">
+        <div class="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+         </svg>
+        </div><span class="text-xl font-bold">VivaCidade</span>
+       </div>
+       <p class="text-slate-400 text-sm">O guia digital do Sul Fluminense. Conectando pessoas a experiências incríveis.</p>
+      </div>
+      <div>
+       <h4 class="font-semibold mb-4">Cidades</h4>
+       <ul class="space-y-2 text-sm text-slate-400">
+        <li><button onclick="selectCity('quatis')" class="hover:text-white transition-colors">Quatis</button></li>
+        <li><button onclick="selectCity('porto-real')" class="hover:text-white transition-colors">Porto Real</button></li>
+        <li><button onclick="selectCity('resende')" class="hover:text-white transition-colors">Resende</button></li>
+        <li><button onclick="selectCity('itatiaia')" class="hover:text-white transition-colors">Itatiaia</button></li>
+        <li><button onclick="selectCity('barra-mansa')" class="hover:text-white transition-colors">Barra Mansa</button></li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold mb-4">Categorias</h4>
+       <ul class="space-y-2 text-sm text-slate-400">
+        <li><button onclick="filterByCategory('hospedagem')" class="hover:text-white transition-colors">Hospedagem</button></li>
+        <li><button onclick="filterByCategory('gastronomia')" class="hover:text-white transition-colors">Gastronomia</button></li>
+        <li><button onclick="filterByCategory('turismo')" class="hover:text-white transition-colors">Turismo e Lazer</button></li>
+        <li><button onclick="filterByCategory('eventos')" class="hover:text-white transition-colors">Eventos</button></li>
+        <li><button onclick="filterByCategory('servicos')" class="hover:text-white transition-colors">Serviços</button></li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-semibold mb-4">Para Empresas</h4>
+       <ul class="space-y-2 text-sm text-slate-400">
+        <li><button onclick="navigateTo('business')" class="hover:text-white transition-colors">Cadastrar Empresa</button></li>
+        <li><button onclick="navigateTo('plans')" class="hover:text-white transition-colors">Planos e Preços</button></li>
+        <li><button class="hover:text-white transition-colors">Central de Ajuda</button></li>
+        <li><button class="hover:text-white transition-colors">Contato</button></li>
+       </ul>
+      </div>
+     </div>
+     <div class="border-t border-slate-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-slate-400">© 2025 VivaCidade Brasil. Todos os direitos reservados.</p>
+      <div class="flex gap-4"><a href="#" class="text-slate-400 hover:text-white transition-colors">
+        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+        </svg></a> <a href="#" class="text-slate-400 hover:text-white transition-colors">
+        <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+        </svg></a>
+      </div>
+     </div>
+    </div>
+   </footer><!-- Toast Notification -->
+   <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <div class="glass-card rounded-xl px-6 py-4 shadow-xl flex items-center gap-3"><span id="toast-icon" class="text-2xl">❤️</span> <span id="toast-message" class="font-medium text-slate-900">Item salvo!</span>
+    </div>
+   </div>
+  </div>
+  <script>
+    // State management
+    let favorites = [];
+    let currentPage = 'home';
+    let config = {};
+    
+    const defaultConfig = {
+      hero_title: 'Descubra. Visite. Viva.',
+      hero_subtitle: 'Seu guia completo para explorar Quatis, Porto Real, Resende, Itatiaia e Barra Mansa. Encontre os melhores lugares, eventos e experiências.',
+      cta_button: 'Explorar Agora',
+      background_color: '#f8fafc',
+      surface_color: '#ffffff',
+      text_color: '#1e293b',
+      primary_action: '#0066FF',
+      secondary_action: '#00B4A0',
+      font_family: 'Plus Jakarta Sans',
+      font_size: 16
+    };
+    
+    // Sample listings data
+    const listings = {
+      'hotel-fazenda': {
+        id: 'hotel-fazenda',
+        name: 'Hotel Fazenda Serra Verde',
+        category: 'Hospedagem',
+        city: 'Itatiaia',
+        rating: 4.9,
+        reviews: 128,
+        description: 'Experiência única na Serra da Mantiqueira com piscina natural, trilhas exclusivas, gastronomia regional e muito conforto. Perfeito para famílias e casais que buscam contato com a natureza.',
+        address: 'Estrada do Parque Nacional, km 15 - Itatiaia, RJ',
+        phone: '(24) 99999-1234',
+        whatsapp: '5524999991234',
+        hours: 'Check-in: 14h | Check-out: 12h',
+        features: ['Piscina Natural', 'Trilhas', 'Restaurante', 'WiFi', 'Estacionamento', 'Pet Friendly'],
+        promo: '20% OFF esta semana',
+        plan: 'elite',
+        gradient: 'from-blue-500 to-teal-600',
+        emoji: '🏨',
+        photos: [
+          { gradient: 'from-blue-400 to-teal-500', emoji: '🏨', label: 'Fachada principal' },
+          { gradient: 'from-cyan-400 to-blue-500', emoji: '🏊', label: 'Piscina natural' },
+          { gradient: 'from-emerald-400 to-teal-500', emoji: '🌲', label: 'Área de trilhas' },
+          { gradient: 'from-orange-400 to-amber-500', emoji: '🍽️', label: 'Restaurante' },
+          { gradient: 'from-purple-400 to-pink-500', emoji: '🛏️', label: 'Suíte Premium' },
+          { gradient: 'from-green-400 to-emerald-500', emoji: '🌄', label: 'Vista da serra' }
+        ]
+      },
+      'restaurante-sabor': {
+        id: 'restaurante-sabor',
+        name: 'Sabor da Serra',
+        category: 'Gastronomia',
+        city: 'Resende',
+        rating: 4.8,
+        reviews: 96,
+        description: 'Culinária regional com ingredientes orgânicos da nossa fazenda própria. Menu degustação especial com harmonização de vinhos locais.',
+        address: 'Rua das Flores, 234 - Centro, Resende',
+        phone: '(24) 99888-5678',
+        whatsapp: '5524998885678',
+        hours: 'Ter-Dom: 12h às 22h',
+        features: ['Orgânicos', 'Wine Bar', 'Área Externa', 'Acessível', 'Reservas'],
+        promo: 'Menu degustação',
+        plan: 'plus',
+        gradient: 'from-orange-400 to-rose-500',
+        emoji: '🍽️',
+        photos: [
+          { gradient: 'from-orange-400 to-rose-500', emoji: '🍽️', label: 'Ambiente interno' },
+          { gradient: 'from-red-400 to-pink-500', emoji: '🥘', label: 'Pratos especiais' },
+          { gradient: 'from-amber-400 to-orange-500', emoji: '🍷', label: 'Wine bar' },
+          { gradient: 'from-green-400 to-teal-500', emoji: '🌿', label: 'Área externa' }
+        ]
+      },
+      'parque-nacional': {
+        id: 'parque-nacional',
+        name: 'Parque Nacional do Itatiaia',
+        category: 'Turismo',
+        city: 'Itatiaia',
+        rating: 4.9,
+        reviews: 312,
+        description: 'O primeiro parque nacional do Brasil, fundado em 1937. Abriga o Pico das Agulhas Negras e oferece trilhas incríveis, cachoeiras e uma biodiversidade única.',
+        address: 'Estrada Parque Nacional - Itatiaia, RJ',
+        phone: '(24) 3352-1461',
+        whatsapp: '552433521461',
+        hours: '8h às 17h (última entrada às 15h)',
+        features: ['Trilhas', 'Cachoeiras', 'Mirantes', 'Guias', 'Camping'],
+        promo: 'Trilhas guiadas',
+        plan: 'elite',
+        gradient: 'from-emerald-400 to-teal-600',
+        emoji: '⛰️',
+        photos: [
+          { gradient: 'from-emerald-400 to-teal-600', emoji: '⛰️', label: 'Pico das Agulhas Negras' },
+          { gradient: 'from-cyan-400 to-blue-500', emoji: '💧', label: 'Cachoeira Véu da Noiva' },
+          { gradient: 'from-green-400 to-emerald-500', emoji: '🌲', label: 'Trilha principal' },
+          { gradient: 'from-blue-400 to-indigo-500', emoji: '🏔️', label: 'Mirante do vale' },
+          { gradient: 'from-teal-400 to-cyan-500', emoji: '🦜', label: 'Fauna local' },
+          { gradient: 'from-lime-400 to-green-500', emoji: '🏕️', label: 'Área de camping' }
+        ]
+      }
+    };
+    
+    // Initialize SDKs
+    async function initApp() {
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = newConfig;
+            applyConfig();
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              {
+                get: () => cfg.background_color || defaultConfig.background_color,
+                set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+              },
+              {
+                get: () => cfg.surface_color || defaultConfig.surface_color,
+                set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+              },
+              {
+                get: () => cfg.text_color || defaultConfig.text_color,
+                set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => cfg.primary_action || defaultConfig.primary_action,
+                set: (v) => { cfg.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); }
+              },
+              {
+                get: () => cfg.secondary_action || defaultConfig.secondary_action,
+                set: (v) => { cfg.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => cfg.font_family || defaultConfig.font_family,
+              set: (v) => { cfg.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+            },
+            fontSizeable: {
+              get: () => cfg.font_size || defaultConfig.font_size,
+              set: (v) => { cfg.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+            }
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['hero_title', cfg.hero_title || defaultConfig.hero_title],
+            ['hero_subtitle', cfg.hero_subtitle || defaultConfig.hero_subtitle],
+            ['cta_button', cfg.cta_button || defaultConfig.cta_button]
+          ])
+        });
+        config = window.elementSdk.config || defaultConfig;
+      } else {
+        config = defaultConfig;
+      }
+      
+      // Initialize Data SDK
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init({
+          onDataChanged: (data) => {
+            favorites = data.filter(d => d.type === 'favorite');
+            updateFavoritesUI();
+          }
+        });
+        if (!result.isOk) {
+          console.error('Failed to initialize Data SDK');
+        }
+      }
+      
+      applyConfig();
+    }
+    
+    function applyConfig() {
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      const ctaButton = document.getElementById('cta-button');
+      
+      if (heroTitle) heroTitle.textContent = config.hero_title || defaultConfig.hero_title;
+      if (heroSubtitle) heroSubtitle.textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
+      if (ctaButton) ctaButton.textContent = config.cta_button || defaultConfig.cta_button;
+      
+      // Apply font
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      document.body.style.fontFamily = `'${fontFamily}', 'Plus Jakarta Sans', sans-serif`;
+      
+      // Apply font size scaling
+      const baseSize = config.font_size || defaultConfig.font_size;
+      document.documentElement.style.fontSize = `${baseSize}px`;
+    }
+    
+    // Navigation
+    function navigateTo(page) {
+      const pages = ['home', 'favorites', 'business', 'listing', 'search', 'cities', 'categories', 'events', 'plans'];
+      pages.forEach(p => {
+        const el = document.getElementById(`page-${p}`);
+        if (el) el.classList.add('hidden');
+      });
+      
+      const targetPage = document.getElementById(`page-${page}`);
+      if (targetPage) {
+        targetPage.classList.remove('hidden');
+        currentPage = page;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (page === 'cities' || page === 'categories' || page === 'events' || page === 'plans') {
+        navigateTo('home');
+      }
+    }
+    
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+    
+    // Favorites
+    async function toggleFavorite(id, name, city, category, rating) {
+      if (!window.dataSdk) {
+        showToast('Função de favoritos indisponível', '⚠️');
+        return;
+      }
+      
+      const existing = favorites.find(f => f.id === id);
+      
+      if (existing) {
+        const result = await window.dataSdk.delete(existing);
+        if (result.isOk) {
+          showToast('Removido dos favoritos', '💔');
+        }
+      } else {
+        if (favorites.length >= 999) {
+          showToast('Limite de favoritos atingido', '⚠️');
+          return;
+        }
+        const result = await window.dataSdk.create({
+          id,
+          type: 'favorite',
+          name,
+          city,
+          category,
+          rating,
+          savedAt: new Date().toISOString()
+        });
+        if (result.isOk) {
+          showToast('Adicionado aos favoritos!', '❤️');
+        }
+      }
+    }
+    
+    function updateFavoritesUI() {
+      // Update favorite count badge
+      const countBadge = document.getElementById('favorites-count');
+      if (favorites.length > 0) {
+        countBadge.textContent = favorites.length;
+        countBadge.classList.remove('hidden');
+      } else {
+        countBadge.classList.add('hidden');
+      }
+      
+      // Update favorite buttons
+      document.querySelectorAll('.favorite-btn').forEach(btn => {
+        const id = btn.dataset.id;
+        const isFav = favorites.some(f => f.id === id);
+        const svg = btn.querySelector('svg');
+        if (isFav) {
+          svg.setAttribute('fill', '#ef4444');
+          svg.classList.remove('text-slate-400');
+          svg.classList.add('text-rose-500');
+        } else {
+          svg.setAttribute('fill', 'none');
+          svg.classList.add('text-slate-400');
+          svg.classList.remove('text-rose-500');
+        }
+      });
+      
+      // Update favorites page
+      const emptyState = document.getElementById('favorites-empty');
+      const grid = document.getElementById('favorites-grid');
+      
+      if (favorites.length === 0) {
+        emptyState.classList.remove('hidden');
+        grid.classList.add('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+        grid.classList.remove('hidden');
+        
+        grid.innerHTML = favorites.map(fav => `
+          <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('${fav.id}')">
+            <div class="relative h-40 bg-gradient-to-br from-blue-400 to-teal-500">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-5xl opacity-30">📍</span>
+              </div>
+              <div class="absolute top-3 right-3">
+                <button onclick="event.stopPropagation(); toggleFavorite('${fav.id}', '${fav.name}', '${fav.city}', '${fav.category}', ${fav.rating})" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="${fav.id}">
+                  <svg class="w-5 h-5 text-rose-500" fill="#ef4444" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center gap-1 mb-2">
+                <span class="star-filled text-sm">★</span>
+                <span class="text-sm font-medium text-slate-700">${fav.rating}</span>
+              </div>
+              <h3 class="font-bold text-slate-900 mb-1">${fav.name}</h3>
+              <p class="text-slate-500 text-sm">📍 ${fav.city} • ${fav.category}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+    
+    // Search and filters
+    function performSearch() {
+      const query = document.getElementById('search-input').value;
+      const city = document.getElementById('city-select').value;
+      
+      document.getElementById('search-title').textContent = query ? `Resultados para "${query}"` : 'Todos os Resultados';
+      document.getElementById('search-subtitle').textContent = city ? `Filtrando por: ${getCityName(city)}` : 'Exibindo todos os locais da região';
+      
+      renderSearchResults(query, city);
+      navigateTo('search');
+    }
+    
+    function filterByCategory(category) {
+      const categoryNames = {
+        hospedagem: 'Hospedagem',
+        gastronomia: 'Gastronomia',
+        turismo: 'Turismo e Lazer',
+        eventos: 'Eventos',
+        servicos: 'Comércio e Serviços'
+      };
+      
+      document.getElementById('search-title').textContent = categoryNames[category] || category;
+      document.getElementById('search-subtitle').textContent = 'Explore os melhores locais desta categoria';
+      
+      renderSearchResults('', '', category);
+      navigateTo('search');
+    }
+    
+    function selectCity(city) {
+      document.getElementById('search-title').textContent = getCityName(city);
+      document.getElementById('search-subtitle').textContent = 'Descubra o melhor desta cidade';
+      
+      renderSearchResults('', city);
+      navigateTo('search');
+    }
+    
+    function getCityName(slug) {
+      const names = {
+        'quatis': 'Quatis',
+        'porto-real': 'Porto Real',
+        'resende': 'Resende',
+        'itatiaia': 'Itatiaia',
+        'barra-mansa': 'Barra Mansa'
+      };
+      return names[slug] || slug;
+    }
+    
+    function renderSearchResults(query, city, category) {
+      const resultsGrid = document.getElementById('search-results');
+      
+      // Sample results based on filters
+      const results = [
+        { id: 'hotel-fazenda', name: 'Hotel Fazenda Serra Verde', city: 'Itatiaia', category: 'Hospedagem', rating: 4.9, gradient: 'from-blue-500 to-teal-600', emoji: '��' },
+        { id: 'restaurante-sabor', name: 'Sabor da Serra', city: 'Resende', category: 'Gastronomia', rating: 4.8, gradient: 'from-orange-400 to-rose-500', emoji: '🍽️' },
+        { id: 'parque-nacional', name: 'Parque Nacional do Itatiaia', city: 'Itatiaia', category: 'Turismo', rating: 4.9, gradient: 'from-emerald-400 to-teal-600', emoji: '⛰️' },
+        { id: 'pousada-vista', name: 'Pousada Vista Linda', city: 'Quatis', category: 'Hospedagem', rating: 4.8, gradient: 'from-sky-400 to-blue-600', emoji: '🏡' },
+        { id: 'cafe-colonial', name: 'Café Colonial da Serra', city: 'Itatiaia', category: 'Gastronomia', rating: 4.9, gradient: 'from-amber-400 to-orange-500', emoji: '☕' },
+        { id: 'cachoeira-escondida', name: 'Cachoeira Escondida', city: 'Resende', category: 'Turismo', rating: 4.7, gradient: 'from-emerald-400 to-cyan-600', emoji: '💧' }
+      ];
+      
+      resultsGrid.innerHTML = results.map(r => `
+        <div class="glass-card rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openListing('${r.id}')">
+          <div class="relative h-40 bg-gradient-to-br ${r.gradient}">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-5xl opacity-30">${r.emoji}</span>
+            </div>
+            <div class="absolute top-3 right-3">
+              <button onclick="event.stopPropagation(); toggleFavorite('${r.id}', '${r.name}', '${r.city}', '${r.category}', ${r.rating})" class="favorite-btn p-2 rounded-full bg-white/90 hover:bg-white transition-all" data-id="${r.id}">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center gap-1 mb-2">
+              <span class="star-filled text-sm">★</span>
+              <span class="text-sm font-medium text-slate-700">${r.rating}</span>
+            </div>
+            <h3 class="font-bold text-slate-900 mb-1">${r.name}</h3>
+            <p class="text-slate-500 text-sm">📍 ${r.city} • ${r.category}</p>
+          </div>
+        </div>
+      `).join('');
+      
+      updateFavoritesUI();
+    }
+    
+    // Listing detail
+    function openListing(id) {
+      const listing = listings[id];
+      if (!listing) {
+        showToast('Local não encontrado', '⚠️');
+        return;
+      }
+      
+      const content = document.getElementById('listing-content');
+      const planBadge = listing.plan === 'elite' 
+        ? '<span class="featured-badge px-3 py-1 rounded-full text-xs font-semibold text-white">ELITE</span>'
+        : listing.plan === 'plus'
+        ? '<span class="bg-blue-600 px-3 py-1 rounded-full text-xs font-semibold text-white">PLUS</span>'
+        : '';
+      
+      content.innerHTML = `
+        <div class="relative h-64 sm:h-80 bg-gradient-to-br ${listing.gradient}">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-9xl opacity-20">${listing.emoji}</span>
+          </div>
+          <button onclick="navigateTo('home')" class="absolute top-4 left-4 p-3 rounded-full bg-white/90 hover:bg-white transition-all shadow-lg z-20">
+            <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          </button>
+          <div class="absolute top-4 right-4 flex gap-2 z-20">
+            ${planBadge}
+            <button onclick="toggleFavorite('${listing.id}', '${listing.name}', '${listing.city}', '${listing.category}', ${listing.rating})" class="favorite-btn p-3 rounded-full bg-white/90 hover:bg-white transition-all shadow-lg" data-id="${listing.id}">
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </button>
+          </div>
+          <div class="absolute bottom-4 left-4 right-4 z-10">
+            <span class="inline-block px-3 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-sm font-medium text-slate-700">
+              📸 ${listing.photos ? listing.photos.length : 0} fotos
+            </span>
+          </div>
+        </div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10 pb-12">
+          <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl mb-6">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+              <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">${listing.name}</h1>
+                <p class="text-slate-500">📍 ${listing.city} • ${listing.category}</p>
+              </div>
+              <div class="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-xl">
+                <span class="star-filled text-xl">★</span>
+                <span class="text-xl font-bold text-slate-900">${listing.rating}</span>
+                <span class="text-slate-500 text-sm">(${listing.reviews})</span>
+              </div>
+            </div>
+            
+            ${listing.promo ? `
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
+              <span class="text-emerald-700 font-semibold">🔥 ${listing.promo}</span>
+            </div>
+            ` : ''}
+            
+            <p class="text-slate-600 leading-relaxed mb-6">${listing.description}</p>
+            
+            <div class="flex flex-wrap gap-2 mb-6">
+              ${listing.features.map(f => `<span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-sm">${f}</span>`).join('')}
+            </div>
+            
+            ${listing.photos && listing.photos.length > 0 ? `
+            <div class="mb-6">
+              <h3 class="text-lg font-bold text-slate-900 mb-4">Galeria de Fotos</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                ${listing.photos.map(photo => `
+                  <div class="aspect-square rounded-xl bg-gradient-to-br ${photo.gradient} overflow-hidden cursor-pointer hover:scale-105 transition-transform relative group">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span class="text-5xl opacity-30 group-hover:opacity-40 transition-opacity">${photo.emoji}</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p class="text-white text-xs font-medium">${photo.label}</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            ` : ''}
+            
+            <div class="border-t border-slate-200 pt-6 space-y-4">
+              <div class="flex items-center gap-3 text-slate-600">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                ${listing.address}
+              </div>
+              <div class="flex items-center gap-3 text-slate-600">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                ${listing.hours}
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <a href="https://wa.me/${listing.whatsapp}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-3 py-4 rounded-xl font-semibold text-white bg-green-500 hover:bg-green-600 transition-all">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WhatsApp
+            </a>
+            <a href="tel:${listing.phone}" class="flex items-center justify-center gap-3 py-4 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              Ligar
+            </a>
+          </div>
+        </div>
+      `;
+      
+      navigateTo('listing');
+      updateFavoritesUI();
+    }
+    
+    // Toast notification
+    function showToast(message, icon = '✓') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+      
+      toastMessage.textContent = message;
+      toastIcon.textContent = icon;
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+    
+    // Initialize app
+    initApp();
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>

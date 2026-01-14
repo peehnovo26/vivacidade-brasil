@@ -1,0 +1,451 @@
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                      🚀 VIVACIDADE BRASIL - MAPA MENTAL                        ┃
+┃                        Plataforma Profissional de Guia                         ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+                              VIVACIDADE BRASIL
+                          /          |          \
+                        /            |            \
+                FRONTEND        BACKEND          DATABASE
+              (Cliente Web)   (API Node.js)     (MongoDB)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              📱 FRONTEND
+════════════════════════════════════════════════════════════════════════════════
+
+    index.html (1321 linhas)
+         |
+         ├─ Hero Section
+         │  ├─ Título "Descubra. Visite. Viva"
+         │  ├─ Search Box
+         │  ├─ Quick Filters
+         │  └─ CTA Botão
+         │
+         ├─ Featured Sponsors (Destaques)
+         │  ├─ Hotel Fazenda Serra Verde (Elite)
+         │  ├─ Sabor da Serra (Plus)
+         │  └─ Parque Nacional do Itatiaia (Elite)
+         │
+         ├─ Explore Cities (5 Cidades)
+         │  ├─ Quatis
+         │  ├─ Porto Real
+         │  ├─ Resende
+         │  ├─ Itatiaia
+         │  └─ Barra Mansa
+         │
+         ├─ Categories (5 Categorias)
+         │  ├─ Hospedagem
+         │  ├─ Gastronomia
+         │  ├─ Turismo e Lazer
+         │  ├─ Eventos
+         │  └─ Comércio e Serviços
+         │
+         ├─ Top Rated (Mais Bem Avaliados)
+         │  └─ Grid de 3+ empresas
+         │
+         ├─ Plans Section (Planos Pagos)
+         │  ├─ Free
+         │  ├─ Plus (R$ 299/mês)
+         │  └─ Elite (R$ 599/mês)
+         │
+         ├─ Footer
+         │  ├─ Links
+         │  ├─ Redes Sociais
+         │  └─ Copyright
+         │
+         └─ app.js (Lógica)
+            ├─ navigateTo()
+            ├─ login/logout
+            ├─ performSearch()
+            ├─ filterByCategory()
+            ├─ toggleFavorite()
+            └─ loadBusinesses()
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              🖥️ ADMIN DASHBOARD
+════════════════════════════════════════════════════════════════════════════════
+
+    admin/dashboard.html
+         |
+         ├─ Sidebar Navigation
+         │  ├─ Dashboard
+         │  ├─ Usuários
+         │  ├─ Empresas
+         │  ├─ Pagamentos
+         │  ├─ Configurações
+         │  └─ Logout
+         │
+         ├─ Dashboard Tab
+         │  ├─ Stat: Total Usuários
+         │  ├─ Stat: Total Empresas
+         │  ├─ Stat: Usuários Premium
+         │  └─ Stat: Total Eventos
+         │
+         ├─ Usuários Tab
+         │  ├─ Tabela com:
+         │  │  ├─ Nome
+         │  │  ├─ Email
+         │  │  ├─ Tipo (role)
+         │  │  ├─ Status Premium
+         │  │  └─ Ações (Editar/Deletar)
+         │  └─ Busca por usuário
+         │
+         ├─ Empresas Tab
+         │  ├─ Tabela com:
+         │  │  ├─ Nome
+         │  │  ├─ Categoria
+         │  │  ├─ Cidade
+         │  │  ├─ Plano
+         │  │  ├─ Avaliação
+         │  │  └─ Ações (Editar/Feature/Deletar)
+         │  ├─ Modal: Criar Empresa
+         │  └─ Busca/Filtros
+         │
+         ├─ Pagamentos Tab
+         │  ├─ Stat: Receita Mensal
+         │  ├─ Stat: Assinaturas Ativas
+         │  ├─ Stat: Assinaturas Canceladas
+         │  └─ Tabela de transações
+         │
+         └─ Configurações Tab
+            ├─ Chave Stripe
+            ├─ Email de Suporte
+            └─ Taxa de Comissão
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              ⚙️ BACKEND (Node.js)
+════════════════════════════════════════════════════════════════════════════════
+
+    server.js (Express Principal)
+         |
+         ├─ Middleware
+         │  ├─ express.json()
+         │  ├─ express.urlencoded()
+         │  ├─ cors()
+         │  └─ MongoDB connection
+         │
+         ├─ Routes
+         │  │
+         │  ├─ /api/auth (routes/auth.js)
+         │  │  ├─ POST /register
+         │  │  ├─ POST /login
+         │  │  └─ GET /me
+         │  │
+         │  ├─ /api/businesses (routes/businesses.js)
+         │  │  ├─ GET / (com filtros)
+         │  │  ├─ GET /:id
+         │  │  ├─ POST / (criar)
+         │  │  ├─ PUT /:id (editar)
+         │  │  ├─ DELETE /:id
+         │  │  └─ PUT /:id/upgrade-plan
+         │  │
+         │  ├─ /api/payments (routes/payments.js)
+         │  │  ├─ POST /subscribe (Stripe)
+         │  │  ├─ POST /webhook
+         │  │  ├─ GET /status
+         │  │  └─ POST /cancel
+         │  │
+         │  └─ /api/admin (routes/admin.js)
+         │     ├─ GET /stats
+         │     ├─ GET /users
+         │     ├─ GET /businesses
+         │     ├─ PUT /businesses/:id/feature
+         │     ├─ DELETE /users/:id
+         │     └─ DELETE /businesses/:id
+         │
+         └─ Middleware
+            ├─ auth.js
+            │  ├─ auth() - verifica token
+            │  ├─ adminAuth() - verifica admin
+            │  └─ businessAuth() - verifica business
+            └─ errorHandler
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              📊 MODELS (MongoDB)
+════════════════════════════════════════════════════════════════════════════════
+
+    User Model
+         ├─ id, name, email, password (hashed)
+         ├─ role: user | business | admin
+         ├─ phone, avatar
+         ├─ favorites: [Business IDs]
+         ├─ subscription
+         │  ├─ plan: free | plus | elite
+         │  ├─ status: active | canceled
+         │  ├─ stripeCustomerId
+         │  └─ expiresAt
+         └─ createdAt
+
+    Business Model
+         ├─ id, name, category, city
+         ├─ description, images, address
+         ├─ phone, email, website
+         ├─ rating, reviews: [Review IDs]
+         ├─ owner: User ID
+         ├─ plan: free | plus | elite
+         ├─ featured: boolean
+         ├─ discount: number
+         ├─ tags: [strings]
+         ├─ openingHours
+         ├─ createdAt, updatedAt
+
+    Review Model
+         ├─ id, business: Business ID
+         ├─ user: User ID
+         ├─ rating: 1-5
+         ├─ title, comment
+         ├─ helpful: number
+         └─ createdAt
+
+    Event Model
+         ├─ id, title, description
+         ├─ city, category, date
+         ├─ location, organizer: Business ID
+         ├─ image, attendees: [User IDs]
+         ├─ tags
+         └─ createdAt
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              💾 DATABASE
+════════════════════════════════════════════════════════════════════════════════
+
+    MongoDB (Atlas)
+         │
+         ├─ Database: "vivacidade"
+         │
+         ├─ Collections
+         │  ├─ users (127 docs)
+         │  ├─ businesses (45+ docs)
+         │  ├─ reviews (100s)
+         │  └─ events (12+)
+         │
+         └─ Cidades
+            ├─ Quatis (42 locais)
+            ├─ Porto Real (38 locais)
+            ├─ Resende (156 locais)
+            ├─ Itatiaia (89 locais)
+            └─ Barra Mansa (124 locais)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              🔐 FLUXO DE AUTENTICAÇÃO
+════════════════════════════════════════════════════════════════════════════════
+
+    REGISTRO
+         │
+         └─ Usuário preenche form
+            └─ POST /api/auth/register
+               └─ Validar dados
+                  └─ Verificar email duplicado
+                     └─ Hash password (bcrypt)
+                        └─ Criar document em MongoDB
+                           └─ Gerar JWT token
+                              └─ Retornar token + user data
+                                 └─ localStorage.setItem('token')
+                                    └─ Redirecionar
+
+    LOGIN
+         │
+         └─ Usuário entra email/senha
+            └─ POST /api/auth/login
+               └─ Procurar user por email
+                  └─ comparePassword(input, stored)
+                     └─ Se igual:
+                        └─ Gerar JWT token
+                           └─ Retornar token
+                              └─ localStorage.setItem('token')
+                                 └─ Exibir nome no header
+
+    REQUISIÇÃO AUTENTICADA
+         │
+         └─ app.js com token
+            └─ fetch com Authorization header
+               └─ Chega ao backend
+                  └─ auth middleware
+                     └─ jwt.verify(token)
+                        └─ Se válido:
+                           └─ Continua rota
+                        └─ Se inválido:
+                           └─ Retorna 401
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              💳 FLUXO DE PAGAMENTO
+════════════════════════════════════════════════════════════════════════════════
+
+    USER QUER PLANO PLUS
+         │
+         └─ Clica botão "Assinar"
+            └─ POST /api/payments/subscribe
+               └─ Criar Stripe Customer
+                  └─ Criar Checkout Session
+                     └─ Retorna URL Stripe
+                        └─ Redireciona para Stripe
+                           └─ Usuário preenche cartão
+                              └─ Stripe processa pagamento
+                                 └─ Webhook POST /api/payments/webhook
+                                    └─ Atualizar user.subscription
+                                       └─ plan: 'plus'
+                                          status: 'active'
+                                          expiresAt: +30 dias
+                                    └─ Redireciona para sucesso
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              🔍 FLUXO DE BUSCA
+════════════════════════════════════════════════════════════════════════════════
+
+    USUÁRIO BUSCA
+         │
+         └─ Digita "pizza" em search
+            └─ Seleciona cidade "Resende"
+               └─ Clica "Explorar"
+                  └─ app.js: performSearch()
+                     └─ fetch GET /api/businesses?search=pizza&city=Resende
+                        └─ Backend: router.get('/businesses')
+                           └─ MongoDB query:
+                              ├─ $regex: pizza
+                              └─ city: Resende
+                           └─ Retorna array de docs
+                              └─ Converter para JSON
+                                 └─ Frontend recebe response
+                                    └─ app.js: displayBusinesses()
+                                       └─ Loop through results
+                                          └─ Criar HTML cards
+                                             └─ Renderizar com Tailwind
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              📱 FUNCIONALIDADES
+════════════════════════════════════════════════════════════════════════════════
+
+    USUÁRIO FINAL
+         ├─ ✅ Registrar/Login
+         ├─ ✅ Buscar empresas
+         ├─ ✅ Filtrar por categoria
+         ├─ ✅ Filtrar por cidade
+         ├─ ✅ Ver detalhes
+         ├─ ✅ Adicionar favoritos
+         ├─ ✅ Contactar direto
+         └─ ✅ Ver avaliações
+
+    PROPRIETÁRIO
+         ├─ ✅ Registrar empresa
+         ├─ ✅ Editar perfil
+         ├─ ✅ Escolher plano
+         ├─ ✅ Aparecer em destaque
+         ├─ ✅ Receber avaliações
+         └─ ✅ Gerenciar dados
+
+    ADMIN
+         ├─ ✅ Ver estatísticas
+         ├─ ✅ Gerenciar usuários
+         ├─ ✅ Gerenciar empresas
+         ├─ ✅ Destacar empresas
+         ├─ ✅ Monitorar pagamentos
+         └─ ✅ Configurar plataforma
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              🚀 TECNOLOGIAS
+════════════════════════════════════════════════════════════════════════════════
+
+    Frontend
+         ├─ HTML5
+         ├─ JavaScript (Vanilla)
+         ├─ Tailwind CSS
+         └─ Fetch API
+
+    Backend
+         ├─ Node.js
+         ├─ Express.js
+         ├─ JWT (jsonwebtoken)
+         ├─ bcryptjs
+         └─ Stripe
+
+    Database
+         ├─ MongoDB
+         └─ Mongoose ODM
+
+    Deployment
+         ├─ Docker
+         └─ docker-compose
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              📈 ESTATÍSTICAS
+════════════════════════════════════════════════════════════════════════════════
+
+    CÓDIGO
+         ├─ ~1321 linhas (Frontend HTML)
+         ├─ ~400 linhas (app.js)
+         ├─ ~500 linhas (Backend routes)
+         ├─ ~200 linhas (Models)
+         └─ Total: ~2500+ linhas
+
+    DADOS
+         ├─ 2 usuários de teste
+         ├─ 8 empresas de teste
+         ├─ 5 cidades
+         └─ 5 categorias
+
+    ARQUIVOS
+         ├─ 9 arquivos JS
+         ├─ 3 arquivos HTML
+         ├─ 6 arquivos de documentação
+         └─ Total: 18+ arquivos criados
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              ✅ STATUS
+════════════════════════════════════════════════════════════════════════════════
+
+    Completado (67%)
+         ├─ ✅ Backend funcional
+         ├─ ✅ Frontend responsivo
+         ├─ ✅ Autenticação
+         ├─ ✅ CRUD completo
+         ├─ ✅ Admin dashboard
+         ├─ ✅ Documentação
+         └─ ✅ Sistema de planos
+
+    Próximo (33%)
+         ├─ 🔄 Upload de imagens
+         ├─ 🔄 Google Maps
+         ├─ 🔄 Notificações email
+         ├─ 🔄 Chat em tempo real
+         ├─ 🔄 App mobile
+         └─ 🔄 Analytics avançado
+
+
+════════════════════════════════════════════════════════════════════════════════
+                              🎯 COMEÇAR JÁ
+════════════════════════════════════════════════════════════════════════════════
+
+    1. MongoDB Atlas
+       └─ Criar conta → Copiar URL
+
+    2. Backend
+       └─ npm install → npm run seed → npm run dev
+
+    3. Frontend
+       └─ Live Server → http://localhost:3000
+
+    4. Testar
+       └─ Buscar → Login → Admin Dashboard
+
+    5. Customizar
+       └─ Adicione suas empresas reais!
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+Desenvolvido com ❤️  para VivaCidade Brasil
+Criado em: 13 de janeiro de 2026
+
+════════════════════════════════════════════════════════════════════════════════
