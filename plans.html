@@ -424,13 +424,20 @@
             
             if (!user) {
                 alert('Por favor, faça login primeiro');
-                window.location.href = '/index.html';
+                window.location.href = '/login.html';
                 return;
             }
 
-            // Redirecionar para página de checkout ou confirmar plano
-            alert(`Plano ${planName.toUpperCase()} selecionado! Redirecionando para checkout...`);
-            // window.location.href = `/checkout.html?plan=${planName}`;
+            // Armazenar plano selecionado
+            localStorage.setItem('selectedPlan', planName);
+            
+            // Se for Free, direto pro formulário
+            if (planName === 'free') {
+                window.location.href = '/register-business.html?plan=free';
+            } else {
+                // Para outros planos, ir pro checkout
+                window.location.href = `/checkout.html?plan=${planName}`;
+            }
         }
     </script>
 </body>
