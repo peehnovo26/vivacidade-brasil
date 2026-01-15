@@ -157,13 +157,54 @@
 
                             <div class="grid md:grid-cols-2 gap-4 mt-4">
                                 <div>
-                                    <label class="block text-sm font-semibold mb-2">Website</label>
-                                    <input type="url" id="website" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="www.seusite.com">
-                                </div>
-                                <div>
                                     <label class="block text-sm font-semibold mb-2">Endereço</label>
                                     <input type="text" id="address" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Rua, número, complemento">
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Website (apenas Start+) -->
+                        <div id="website-section" style="display: none;">
+                            <h3 class="text-lg font-semibold mb-4">🌐 Presença Online</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-2">Website</label>
+                                    <input type="url" id="website" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="www.seusite.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Redes Sociais (apenas Plus+) -->
+                        <div id="social-section" style="display: none;">
+                            <h3 class="text-lg font-semibold mb-4">📱 Redes Sociais</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-2">Instagram</label>
+                                    <input type="text" id="instagram" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="@seu_usuario">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold mb-2">Facebook</label>
+                                    <input type="text" id="facebook" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="SEU_USUARIO">
+                                </div>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <label class="block text-sm font-semibold mb-2">WhatsApp</label>
+                                    <input type="tel" id="whatsapp" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="(24) 99999-9999">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seções Premium (apenas Elite) -->
+                        <div id="advanced-section" style="display: none;">
+                            <h3 class="text-lg font-semibold mb-4">⭐ Informações Premium</h3>
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold mb-2">Horário de Funcionamento</label>
+                                <textarea id="business-hours" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Seg-Sex: 09:00 - 18:00&#10;Sab: 10:00 - 14:00"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold mb-2">Descrição em Inglês</label>
+                                <textarea id="description-en" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="English description of your business"></textarea>
                             </div>
                         </div>
 
@@ -203,22 +244,93 @@
         let selectedFiles = [];
         let uploadedImageUrls = []; // Armazena URLs das fotos no Cloudinary
         let maxImages = 5; // Padrão
+        let currentPlan = 'start'; // Plano padrão
+
+        // Configuração de planos
+        const planFeatures = {
+            'free': {
+                maxImages: 1,
+                fields: ['basic', 'contact'],
+                features: ['Nome', 'Categoria', 'Cidade', 'Descrição', 'Email', 'Telefone', '1 Imagem']
+            },
+            'start': {
+                maxImages: 3,
+                fields: ['basic', 'contact', 'website'],
+                features: ['Nome', 'Categoria', 'Cidade', 'Descrição', 'Email', 'Telefone', 'Website', '3 Imagens']
+            },
+            'plus': {
+                maxImages: 5,
+                fields: ['basic', 'contact', 'website', 'social'],
+                features: ['Nome', 'Categoria', 'Cidade', 'Descrição', 'Email', 'Telefone', 'Website', 'Redes Sociais', '5 Imagens']
+            },
+            'elite': {
+                maxImages: 10,
+                fields: ['basic', 'contact', 'website', 'social', 'advanced'],
+                features: ['Nome', 'Categoria', 'Cidade', 'Descrição', 'Email', 'Telefone', 'Website', 'Redes Sociais', 'Horário', 'Descrição em Inglês', '10 Imagens']
+            }
+        };
 
         // Definir limite de imagens baseado no plano do usuário
         function setImageLimit() {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            // Padrão: 5 imagens (pode ser ajustado conforme o plano)
-            // Free: 1 imagem
-            // Start: 3 imagens
-            // Plus: 5 imagens
-            // Elite: 10 imagens
-            maxImages = 5; // Padrão ao registrar
+            const urlParams = new URLSearchParams(window.location.search);
+            currentPlan = urlParams.get('plan') || localStorage.getItem('selectedPlan') || 'start';
+            
+            const planConfig = planFeatures[currentPlan];
+            maxImages = planConfig.maxImages;
+            
             updateLimitInfo();
+            showPlanBadge();
+            adaptFormTooPlan();
         }
 
         function updateLimitInfo() {
             document.getElementById('plan-limit').innerHTML = 
                 `📸 Você pode adicionar até <strong>${maxImages}</strong> imagens (5MB cada)`;
+        }
+
+        function showPlanBadge() {
+            const planName = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
+            const header = document.querySelector('h1');
+            const badge = document.createElement('span');
+            badge.className = 'inline-block ml-3 px-3 py-1 rounded-full text-sm font-semibold gradient-primary text-white';
+            badge.textContent = `Plano: ${planName}`;
+            header.appendChild(badge);
+        }
+
+        function adaptFormTooPlan() {
+            const planConfig = planFeatures[currentPlan];
+            
+            // Mostrar/Esconder seções conforme o plano
+            document.getElementById('website-section').style.display = 
+                planConfig.fields.includes('website') ? 'block' : 'none';
+            
+            document.getElementById('social-section').style.display = 
+                planConfig.fields.includes('social') ? 'block' : 'none';
+            
+            document.getElementById('advanced-section').style.display = 
+                planConfig.fields.includes('advanced') ? 'block' : 'none';
+            
+            // Mostra quais campos estão inclusos
+            showPlanFeatures();
+        }
+
+        function showPlanFeatures() {
+            const features = planFeatures[currentPlan].features;
+            const featureList = document.createElement('div');
+            featureList.className = 'mt-4 p-4 bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg border-l-4 border-blue-500';
+            featureList.innerHTML = `
+                <p class="text-sm font-semibold text-gray-700 mb-2">✨ Seu plano inclui:</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    ${features.map(f => `<li>✓ ${f}</li>`).join('')}
+                </ul>
+            `;
+            
+            const form = document.getElementById('registration-form');
+            if (form.parentElement.querySelector('.plan-features')) {
+                form.parentElement.querySelector('.plan-features').remove();
+            }
+            form.parentElement.insertBefore(featureList, form);
+            featureList.classList.add('plan-features');
         }
 
         // Drag and Drop
@@ -328,10 +440,35 @@
                 description: document.getElementById('description').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
-                website: document.getElementById('website').value,
                 address: document.getElementById('address').value,
-                images: uploadedImageUrls // 🔥 Adiciona as URLs das fotos do Cloudinary
+                images: uploadedImageUrls,
+                plan: currentPlan
             };
+
+            // Campos do Start+
+            const website = document.getElementById('website');
+            if (website && website.value) {
+                businessData.website = website.value;
+            }
+
+            // Campos do Plus+
+            if (document.getElementById('instagram')?.value) {
+                businessData.instagram = document.getElementById('instagram').value;
+            }
+            if (document.getElementById('facebook')?.value) {
+                businessData.facebook = document.getElementById('facebook').value;
+            }
+            if (document.getElementById('whatsapp')?.value) {
+                businessData.whatsapp = document.getElementById('whatsapp').value;
+            }
+
+            // Campos do Elite
+            if (document.getElementById('business-hours')?.value) {
+                businessData.businessHours = document.getElementById('business-hours').value;
+            }
+            if (document.getElementById('description-en')?.value) {
+                businessData.descriptionEn = document.getElementById('description-en').value;
+            }
 
             try {
                 const token = localStorage.getItem('token');
