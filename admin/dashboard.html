@@ -523,6 +523,16 @@
                 <input type="file" id="business-image" accept="image/*" placeholder="Selecione uma imagem">
                 <small style="color: #666; margin-top: 5px; display: block;">Formatos suportados: JPG, PNG (máx. 5MB)</small>
             </div>
+            <div class="form-group">
+                <label>Plano</label>
+                <select id="business-plan" required>
+                    <option value="">-- Selecione o plano --</option>
+                    <option value="Free">Free</option>
+                    <option value="Start">Start (R$ 29,90/mês)</option>
+                    <option value="Plus">Plus (R$ 49,90/mês)</option>
+                    <option value="Elite">Elite (R$ 79,90/mês)</option>
+                </select>
+            </div>
             <div class="flex gap-3">
                 <button onclick="closeBusinessModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
                 <button onclick="saveBusiness()" class="flex-1 btn btn-primary" id="business-submit-btn">Criar</button>
@@ -575,6 +585,11 @@
             <div class="form-group">
                 <label>Local</label>
                 <input type="text" id="event-location" placeholder="Local do evento">
+            </div>
+            <div class="form-group">
+                <label>Foto do Evento</label>
+                <input type="file" id="event-image" accept="image/*" placeholder="Selecione uma imagem">
+                <small style="color: #666; margin-top: 5px; display: block;">Formatos suportados: JPG, PNG (máx. 5MB)</small>
             </div>
             <div class="flex gap-3">
                 <button onclick="closeEventModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
@@ -744,7 +759,7 @@
                         <td>${b.owner || '-'}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-edit" onclick="editBusiness('${b._id}', '${escapeQuotes(b.name)}', '${escapeQuotes(b.category || '')}', '${escapeQuotes(b.city || '')}', '${escapeQuotes(b.description || '')}')">✏️ Editar</button>
+                                <button class="btn btn-edit" onclick="editBusiness('${b._id}', '${escapeQuotes(b.name)}', '${escapeQuotes(b.category || '')}', '${escapeQuotes(b.city || '')}', '${escapeQuotes(b.description || '')}', '${b.plan || 'Free'}')">✏️ Editar</button>
                                 <button class="btn btn-danger" onclick="deleteBusiness('${b._id}')">🗑️ Deletar</button>
                             </div>
                         </td>
@@ -867,6 +882,7 @@
             document.getElementById('business-desc').value = '';
             document.getElementById('business-category').value = '';
             document.getElementById('business-city').value = '';
+            document.getElementById('business-plan').value = '';
             document.getElementById('business-image').value = '';
             document.getElementById('businessModal').classList.add('active');
         }
@@ -876,7 +892,7 @@
             editingBusinessId = null;
         }
 
-        function editBusiness(id, name, category, city, desc) {
+        function editBusiness(id, name, category, city, desc, plan) {
             editingBusinessId = id;
             document.getElementById('business-modal-title').textContent = 'Editar Negócio';
             document.getElementById('business-submit-btn').textContent = 'Salvar';
@@ -884,6 +900,7 @@
             document.getElementById('business-category').value = category;
             document.getElementById('business-city').value = city;
             document.getElementById('business-desc').value = desc;
+            document.getElementById('business-plan').value = plan || 'Free';
             document.getElementById('business-image').value = '';
             document.getElementById('businessModal').classList.add('active');
         }
@@ -893,15 +910,16 @@
             const description = document.getElementById('business-desc').value;
             const category = document.getElementById('business-category').value;
             const city = document.getElementById('business-city').value;
+            const plan = document.getElementById('business-plan').value;
             const imageFile = document.getElementById('business-image').files[0];
 
-            if (!name || !category || !city) {
-                alert('Preencha todos os campos obrigatórios');
+            if (!name || !category || !city || !plan) {
+                alert('Preencha todos os campos obrigatórios (incluindo o plano)');
                 return;
             }
 
             try {
-                let businessData = { name, description, category, city };
+                let businessData = { name, description, category, city, plan };
                 
                 // Se houver imagem, fazer upload primeiro
                 if (imageFile) {
@@ -945,12 +963,18 @@
                     loadBusinesses();
                     loadDashboardData();
                 } else {
-                    const error = await res.json();
-                    alert(`Erro ao salvar negócio: ${error.error}`);
+                    let errorMessage = 'Erro ao salvar negócio';
+                    try {
+                        const error = await res.json();
+                        errorMessage = error.error || error.message || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Erro ao salvar negócio (HTTP ${res.status})`;
+                    }
+                    alert(errorMessage);
                 }
             } catch (err) {
-                console.error(err);
-                alert('Erro ao conectar com o servidor');
+                console.error('Erro ao conectar com servidor:', err);
+                alert(`Erro ao conectar com o servidor: ${err.message || 'Verifique sua conexão de internet'}`);
             }
         }
 
@@ -1009,6 +1033,7 @@
             document.getElementById('event-business').value = '';
             document.getElementById('event-date').value = '';
             document.getElementById('event-location').value = '';
+            document.getElementById('event-image').value = '';
             document.getElementById('eventModal').classList.add('active');
         }
 
@@ -1025,6 +1050,7 @@
             document.getElementById('event-business').value = businessId;
             document.getElementById('event-date').value = date.slice(0, 16);
             document.getElementById('event-location').value = location;
+            document.getElementById('event-image').value = '';
             document.getElementById('eventModal').classList.add('active');
         }
 
@@ -1033,13 +1059,38 @@
             const businessId = document.getElementById('event-business').value;
             const date = document.getElementById('event-date').value;
             const location = document.getElementById('event-location').value;
+            const imageFile = document.getElementById('event-image').files[0];
 
             if (!name || !businessId || !date || !location) {
-                alert('Preencha todos os campos');
+                alert('Preencha todos os campos obrigatórios');
                 return;
             }
 
             try {
+                let eventData = { name, businessId, date, location };
+                
+                // Se houver imagem, fazer upload primeiro
+                if (imageFile) {
+                    const formData = new FormData();
+                    formData.append('image', imageFile);
+                    formData.append('eventId', editingEventId || 'new');
+
+                    const uploadRes = await fetch(`${API_URL}/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${adminToken}`
+                        },
+                        body: formData
+                    });
+
+                    if (uploadRes.ok) {
+                        const uploadData = await uploadRes.json();
+                        eventData.image = uploadData.imageUrl || uploadData.url;
+                    } else {
+                        console.warn('Erro ao fazer upload da imagem, continuando sem imagem');
+                    }
+                }
+
                 const method = editingEventId ? 'PUT' : 'POST';
                 const url = editingEventId 
                     ? `${API_URL}/admin/events/${editingEventId}`
@@ -1051,7 +1102,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${adminToken}`
                     },
-                    body: JSON.stringify({ name, businessId, date, location })
+                    body: JSON.stringify(eventData)
                 });
 
                 if (res.ok) {
@@ -1060,11 +1111,18 @@
                     loadEvents();
                     loadDashboardData();
                 } else {
-                    alert('Erro ao salvar evento');
+                    let errorMessage = 'Erro ao salvar evento';
+                    try {
+                        const error = await res.json();
+                        errorMessage = error.error || error.message || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Erro ao salvar evento (HTTP ${res.status})`;
+                    }
+                    alert(errorMessage);
                 }
             } catch (err) {
-                console.error(err);
-                alert('Erro ao conectar com o servidor');
+                console.error('Erro ao conectar com servidor:', err);
+                alert(`Erro ao conectar com o servidor: ${err.message || 'Verifique sua conexão de internet'}`);
             }
         }
 
