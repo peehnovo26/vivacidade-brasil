@@ -14,7 +14,8 @@ app.use(cors({
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5000',
     'https://vivacidade-brasil-web.onrender.com',
-    'https://vivacidade-brasil-api.onrender.com'
+    'https://vivacidade-brasil-api.onrender.com',
+    'https://vivacidade-brasil.onrender.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -23,26 +24,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servir arquivos estáticos do frontend
-app.use(express.static(path.join(__dirname, './public')));
+// Servir arquivos estáticos do frontend PRIMEIRO
+const publicPath = path.join(__dirname, './public');
+app.use(express.static(publicPath));
 
 // Servir arquivos estáticos (uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
-// Rota catch-all para servir index.html (SPA fallback)
-app.get('*', (req, res) => {
-  // Se for uma rota de API, não fazer nada (deixar passar para os routes)
-  if (req.path.startsWith('/api/')) {
-    return;
-  }
-  // Caso contrário, tentar servir o arquivo ou o index.html
-  const filePath = path.join(__dirname, './public', req.path);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      res.sendFile(path.join(__dirname, './public/index.html'));
-    }
-  });
-});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
@@ -64,6 +51,11 @@ app.use('/api/upload', require('./routes/upload'));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running' });
+});
+
+// Rota catch-all para servir index.html (SPA fallback) - DEVE SER A ÚLTIMA
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
