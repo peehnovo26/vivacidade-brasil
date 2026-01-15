@@ -7,7 +7,7 @@ const upload = require('../middleware/upload');
 // Get all businesses
 router.get('/', async (req, res) => {
   try {
-    const { city, category, search, plan } = req.query;
+    const { city, category, search, plan, limit = 50 } = req.query;
     let query = {};
 
     if (city) query.city = city;
@@ -22,7 +22,10 @@ router.get('/', async (req, res) => {
 
     const businesses = await Business.find(query)
       .populate('owner', 'name email')
-      .sort({ featured: -1, rating: -1 });
+      .select('name category city description rating plan featured owner createdAt')
+      .limit(parseInt(limit))
+      .sort({ featured: -1, rating: -1 })
+      .lean(); // Usar lean() para queries apenas-leitura mais rápidas
 
     res.json(businesses);
   } catch (err) {

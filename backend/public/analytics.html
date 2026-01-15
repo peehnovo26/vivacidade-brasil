@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - VivaCidade Brasil Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f0f4f8;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .stat-card h4 {
+            color: #999;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .chart-container {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">📊 Analytics & Relatórios</h1>
+
+        <!-- Key Metrics -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <h4>Total de Usuários</h4>
+                <div class="stat-value" id="total-users">0</div>
+                <p class="text-xs text-gray-500 mt-2">Crescimento este mês: <span id="users-growth">+0%</span></p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total de Negócios</h4>
+                <div class="stat-value" id="total-businesses">0</div>
+                <p class="text-xs text-gray-500 mt-2">Novos este mês: <span id="businesses-new">0</span></p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Negócios Ativos</h4>
+                <div class="stat-value" id="active-businesses">0</div>
+                <p class="text-xs text-gray-500 mt-2">Com eventos</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Revenue (Planos Pagos)</h4>
+                <div class="stat-value" id="total-revenue">R$ 0</div>
+                <p class="text-xs text-gray-500 mt-2">Subscrições ativas</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Taxa de Avaliação</h4>
+                <div class="stat-value" id="average-rating">0</div>
+                <p class="text-xs text-gray-500 mt-2">Média geral da plataforma</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total de Avaliações</h4>
+                <div class="stat-value" id="total-reviews">0</div>
+                <p class="text-xs text-gray-500 mt-2">Avaliações geradas</p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+            <div class="chart-container">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Negócios por Categoria</h3>
+                <canvas id="categoriesChart" height="300"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Negócios por Cidade</h3>
+                <canvas id="citiesChart" height="300"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Distribuição de Planos</h3>
+                <canvas id="plansChart" height="300"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Crescimento de Usuários</h3>
+                <canvas id="growthChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Rated Businesses -->
+        <div class="chart-container mt-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">🏆 Top 10 Negócios Melhor Avaliados</h3>
+            <table class="w-full">
+                <thead>
+                    <tr style="border-bottom: 2px solid #e9ecef;">
+                        <th style="text-align: left; padding: 12px; font-weight: 600; color: #333;">Negócio</th>
+                        <th style="text-align: left; padding: 12px; font-weight: 600; color: #333;">Categoria</th>
+                        <th style="text-align: left; padding: 12px; font-weight: 600; color: #333;">Rating</th>
+                        <th style="text-align: left; padding: 12px; font-weight: 600; color: #333;">Reviews</th>
+                        <th style="text-align: left; padding: 12px; font-weight: 600; color: #333;">Plano</th>
+                    </tr>
+                </thead>
+                <tbody id="top-businesses-table">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 24px; color: #999;">Carregando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <button onclick="window.history.back()" class="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-600 transition">← Voltar</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
+        const adminToken = localStorage.getItem('admin_token');
+
+        let categoriesChart = null;
+        let citiesChart = null;
+        let plansChart = null;
+        let growthChart = null;
+
+        // Cores para gráficos
+        const colors = [
+            '#0066FF', '#00B4A0', '#ff6b6b', '#ffd93d', '#6bcf7f', '#4d63ff',
+            '#ff85a1', '#00d4ff', '#c9a961', '#a78bfa'
+        ];
+
+        async function loadAnalytics() {
+            try {
+                // Carregar dados
+                const [statsRes, businessesRes, reviewsRes] = await Promise.all([
+                    fetch(`${API_URL}/admin/stats`, { headers: { 'Authorization': `Bearer ${adminToken}` } }),
+                    fetch(`${API_URL}/businesses`, { headers: { 'Authorization': `Bearer ${adminToken}` } }),
+                    fetch(`${API_URL}/admin/reviews`, { headers: { 'Authorization': `Bearer ${adminToken}` } })
+                ]);
+
+                const stats = await statsRes.json();
+                const businesses = await businessesRes.json();
+                const reviews = await reviewsRes.json();
+
+                // Atualizar cards
+                document.getElementById('total-users').textContent = stats.totalUsers || 0;
+                document.getElementById('total-businesses').textContent = stats.totalBusinesses || 0;
+                document.getElementById('total-reviews').textContent = reviews.length || 0;
+                document.getElementById('total-revenue').textContent = 'R$ ' + (calculateRevenue(businesses) / 100).toFixed(2);
+
+                // Calcular rating médio
+                const avgRating = calculateAverageRating(businesses);
+                document.getElementById('average-rating').textContent = avgRating.toFixed(1);
+
+                // Negócios ativos (com pelo menos um evento)
+                const activeBiz = businesses.filter(b => b.featured || (Array.isArray(b.reviews) && b.reviews.length > 0));
+                document.getElementById('active-businesses').textContent = activeBiz.length;
+
+                // Gráficos
+                drawCategoriesChart(businesses);
+                drawCitiesChart(businesses);
+                drawPlansChart(businesses);
+                drawGrowthChart(businesses);
+
+                // Top rated
+                drawTopBusinesses(businesses);
+
+            } catch (err) {
+                console.error('Erro ao carregar analytics:', err);
+            }
+        }
+
+        function calculateRevenue(businesses) {
+            const planPrices = {
+                'start': 2990,
+                'plus': 4990,
+                'elite': 7990
+            };
+
+            return businesses.reduce((total, b) => {
+                return total + (planPrices[b.plan] || 0);
+            }, 0);
+        }
+
+        function calculateAverageRating(businesses) {
+            if (!businesses.length) return 0;
+            const sum = businesses.reduce((acc, b) => acc + (b.rating || 0), 0);
+            return sum / businesses.length;
+        }
+
+        function drawCategoriesChart(businesses) {
+            const categories = {};
+            businesses.forEach(b => {
+                categories[b.category] = (categories[b.category] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('categoriesChart').getContext('2d');
+            if (categoriesChart) categoriesChart.destroy();
+            
+            categoriesChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: colors
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true }
+            });
+        }
+
+        function drawCitiesChart(businesses) {
+            const cities = {};
+            businesses.forEach(b => {
+                cities[b.city] = (cities[b.city] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('citiesChart').getContext('2d');
+            if (citiesChart) citiesChart.destroy();
+            
+            citiesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(cities),
+                    datasets: [{
+                        label: 'Negócios',
+                        data: Object.values(cities),
+                        backgroundColor: '#0066FF'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function drawPlansChart(businesses) {
+            const plans = {};
+            businesses.forEach(b => {
+                plans[b.plan || 'free'] = (plans[b.plan || 'free'] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('plansChart').getContext('2d');
+            if (plansChart) plansChart.destroy();
+            
+            plansChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(plans).map(p => p.charAt(0).toUpperCase() + p.slice(1)),
+                    datasets: [{
+                        data: Object.values(plans),
+                        backgroundColor: ['#ccc', '#0066FF', '#00B4A0', '#ffd93d']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true }
+            });
+        }
+
+        function drawGrowthChart(businesses) {
+            // Simular crescimento ao longo dos últimos 12 meses
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const currentMonth = new Date().getMonth();
+            const displayMonths = months.slice(Math.max(0, currentMonth - 5), currentMonth + 1);
+            const totalBiz = businesses.length;
+            const data = displayMonths.map((_, i) => Math.round((totalBiz / displayMonths.length) * (i + 1)));
+
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            if (growthChart) growthChart.destroy();
+            
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: displayMonths,
+                    datasets: [{
+                        label: 'Negócios',
+                        data: data,
+                        borderColor: '#0066FF',
+                        backgroundColor: 'rgba(0, 102, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function drawTopBusinesses(businesses) {
+            const sorted = [...businesses]
+                .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                .slice(0, 10);
+
+            const tbody = document.getElementById('top-businesses-table');
+            tbody.innerHTML = sorted.map(b => `
+                <tr style="border-bottom: 1px solid #e9ecef;">
+                    <td style="padding: 12px; color: #333;"><strong>${b.name}</strong></td>
+                    <td style="padding: 12px; color: #666;">${b.category || '-'}</td>
+                    <td style="padding: 12px;"><strong>${(b.rating || 0).toFixed(1)} ⭐</strong></td>
+                    <td style="padding: 12px; color: #666;">${b.reviews ? b.reviews.length : 0}</td>
+                    <td style="padding: 12px;"><span style="background: #e3f2fd; color: #0066ff; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">${(b.plan || 'free').toUpperCase()}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // Carregar ao abrir a página
+        window.addEventListener('load', loadAnalytics);
+    </script>
+</body>
+</html>
