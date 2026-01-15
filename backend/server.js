@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 
@@ -24,17 +25,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servir arquivos estáticos do frontend PRIMEIRO
+// Caminho para arquivos estáticos
 const publicPath = path.join(__dirname, './public');
-console.log('Serving static files from:', publicPath);
+console.log('📁 Public path:', publicPath);
+console.log('📁 Public path exists:', fs.existsSync(publicPath));
+
+// Servir arquivos estáticos
 app.use(express.static(publicPath));
 
-// Servir arquivos estáticos (uploads)
+// Servir uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Health check (disponível imediatamente)
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running' });
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date() });
 });
 
 // Connect to MongoDB
@@ -43,27 +47,30 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true
 }).then(() => {
   console.log('✅ MongoDB connected');
-  
-  // Carregar rotas APÓS conexão com MongoDB
-  app.use('/api/auth', require('./routes/auth'));
-  app.use('/api/businesses', require('./routes/businesses'));
-  app.use('/api/payments', require('./routes/payments'));
-  app.use('/api/admin', require('./routes/admin'));
-  app.use('/api/upload', require('./routes/upload'));
-  
-  console.log('✅ API routes loaded');
 }).catch(err => {
-  console.log('❌ MongoDB connection error:', err);
+  console.log('❌ MongoDB error:', err.message);
 });
 
-// Rota catch-all para servir index.html (SPA fallback) - DEVE SER A ÚLTIMA
+// API Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/businesses', require('./routes/businesses'));
+app.use('/api/payments', require('./routes/payments'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/upload', require('./routes/upload'));
+
+// Catch-all: servir index.html para SPA
 app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, './public/index.html');
-  console.log('Serving index.html from:', indexPath);
-  res.sendFile(indexPath);
+  const indexPath = path.join(publicPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('❌ Erro ao servir index.html:', err.message);
+      res.status(404).json({ error: 'Not found' });
+    }
+  });
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server listening on port ${PORT}`);
+  console.log(`📍 URL: http://localhost:${PORT}`);
 });
