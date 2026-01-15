@@ -78,12 +78,56 @@
                                 </div>
                             </div>
 
-                            <!-- Informações de Pagamento -->
+                            <!-- Método de Pagamento -->
                             <div class="mb-8">
+                                <h3 class="text-lg font-semibold mb-4">Método de Pagamento</h3>
+                                
+                                <div class="space-y-3">
+                                    <!-- Cartão -->
+                                    <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition" style="border-color: #ddd;">
+                                        <input type="radio" name="payment-method" value="card" class="w-4 h-4 text-blue-600" checked onchange="updatePaymentMethod('card')">
+                                        <span class="ml-3">💳 Cartão de Crédito/Débito</span>
+                                    </label>
+                                    
+                                    <!-- PIX -->
+                                    <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition" style="border-color: #ddd;">
+                                        <input type="radio" name="payment-method" value="pix" class="w-4 h-4 text-blue-600" onchange="updatePaymentMethod('pix')">
+                                        <span class="ml-3">🟦 PIX (Instantâneo)</span>
+                                    </label>
+                                    
+                                    <!-- Boleto -->
+                                    <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition" style="border-color: #ddd;">
+                                        <input type="radio" name="payment-method" value="boleto" class="w-4 h-4 text-blue-600" onchange="updatePaymentMethod('boleto')">
+                                        <span class="ml-3">📄 Boleto Bancário (até 3 dias)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Card Element (visível apenas para cartão) -->
+                            <div id="card-section" class="mb-8">
                                 <h3 class="text-lg font-semibold mb-4">Informações de Pagamento</h3>
                                 <div id="card-element"></div>
                                 <div id="card-errors" style="color: #fa755a; margin-top: 8px;"></div>
                             </div>
+
+                            <!-- PIX Info (visível apenas para PIX) -->
+                            <div id="pix-section" class="mb-8" style="display: none;">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-700">✓ Você receberá um código PIX para copiar e colar</p>
+                                    <p class="text-sm text-gray-700">✓ Pagamento confirmado instantaneamente</p>
+                                    <p class="text-sm text-gray-700">✓ Disponível 24h por dia, 7 dias por semana</p>
+                                </div>
+                            </div>
+
+                            <!-- Boleto Info (visível apenas para Boleto) -->
+                            <div id="boleto-section" class="mb-8" style="display: none;">
+                                <div class="bg-yellow-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-700">✓ Você receberá um código de barras para pagar</p>
+                                    <p class="text-sm text-gray-700">✓ Pagamento processado em até 3 dias úteis</p>
+                                    <p class="text-sm text-gray-700">✓ Pode pagar em qualquer banco</p>
+                                </div>
+                            </div>
+
 
                             <button type="submit" id="submit-button" class="w-full py-3 rounded-xl font-semibold text-white gradient-primary hover:opacity-90 transition disabled:opacity-50" disabled>
                                 Confirmar Pagamento
