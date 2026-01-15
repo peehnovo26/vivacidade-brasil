@@ -29,6 +29,21 @@ app.use(express.static(path.join(__dirname, '../')));
 // Servir arquivos estáticos (uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Rota catch-all para servir index.html (SPA fallback)
+app.get('*', (req, res) => {
+  // Se for uma rota de API, não fazer nada (deixar passar para os routes)
+  if (req.path.startsWith('/api/')) {
+    return;
+  }
+  // Caso contrário, tentar servir o arquivo ou o index.html
+  const filePath = path.join(__dirname, '../', req.path);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.sendFile(path.join(__dirname, '../index.html'));
+    }
+  });
+});
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
