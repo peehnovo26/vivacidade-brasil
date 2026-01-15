@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar - VivaCidade Brasil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .gradient-primary {
+            background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .register-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .register-left {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        .register-right {
+            flex: 1;
+            background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .register-form {
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #0066FF;
+            box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+        }
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .btn-register-primary {
+            background: linear-gradient(135deg, #0066FF 0%, #00B4A0 100%);
+            color: white;
+        }
+        .btn-register-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .btn-register-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error {
+            background: #ffe0e0;
+            color: #c00;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+        .success {
+            background: #e0ffe0;
+            color: #0a0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+        .register-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .register-logo h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .register-logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        .password-requirements {
+            background: #f0f7ff;
+            border: 1px solid #cce0ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #333;
+        }
+        .password-requirements ul {
+            margin: 0;
+            padding-left: 16px;
+            list-style: none;
+        }
+        .password-requirements li {
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+        .password-requirements li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00B4A0;
+        }
+        .divider-text {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .divider-text a {
+            color: #0066FF;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .divider-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <!-- Left Side - Form -->
+        <div class="register-left">
+            <div class="register-form">
+                <div class="register-logo">
+                    <h1><span class="gradient-text">VivaCidade</span></h1>
+                    <p>Criar Conta</p>
+                </div>
+
+                <div id="error-message" class="error"></div>
+                <div id="success-message" class="success"></div>
+
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="name">Nome Completo</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name"
+                            placeholder="Seu nome" 
+                            autocomplete="name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email"
+                            placeholder="seu@email.com" 
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            placeholder="Mínimo 8 caracteres" 
+                            autocomplete="new-password"
+                            required
+                        >
+                        <div class="password-requirements">
+                            <p style="margin: 0 0 8px 0; font-weight: 600;">Requisitos:</p>
+                            <ul>
+                                <li id="req-length">Mínimo 8 caracteres</li>
+                                <li id="req-uppercase">Uma letra maiúscula</li>
+                                <li id="req-number">Um número</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmar Senha</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword"
+                            placeholder="Repita sua senha" 
+                            autocomplete="new-password"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-register btn-register-primary" id="submitBtn">
+                        Registrar
+                    </button>
+                </form>
+
+                <div class="divider-text">
+                    Já tem conta? <a onclick="window.location.href='/admin/login.html'">Faça login</a>
+                </div>
+
+                <div style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <p style="font-size: 12px; color: #666; margin-bottom: 8px; text-align: center;">
+                        ⚠️ Contas criadas aqui são para <strong>administradores</strong>
+                    </p>
+                    <p style="font-size: 12px; color: #999; margin: 0; text-align: center;">
+                        Usuários comuns se registram pela plataforma
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Hero -->
+        <div class="register-right gradient-primary">
+            <div style="text-align: center; max-width: 400px;">
+                <h2 style="font-size: 36px; font-weight: bold; margin-bottom: 16px;">Bem-vindo!</h2>
+                <p style="font-size: 18px; opacity: 0.9; margin-bottom: 40px;">
+                    Crie sua conta de administrador para gerenciar a plataforma VivaCidade.
+                </p>
+                
+                <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 50px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 12px;">🏢</div>
+                        <p style="font-size: 14px; opacity: 0.95;">Gerencie Negócios</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 12px;">👥</div>
+                        <p style="font-size: 14px; opacity: 0.95;">Controle Usuários</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 12px;">📊</div>
+                        <p style="font-size: 14px; opacity: 0.95;">Analytics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
+
+        // Password validation
+        const passwordInput = document.getElementById('password');
+        passwordInput.addEventListener('input', validatePassword);
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password)
+            };
+
+            updateRequirement('req-length', requirements.length);
+            updateRequirement('req-uppercase', requirements.uppercase);
+            updateRequirement('req-number', requirements.number);
+
+            return requirements.length && requirements.uppercase && requirements.number;
+        }
+
+        function updateRequirement(id, isValid) {
+            const element = document.getElementById(id);
+            if (isValid) {
+                element.style.color = '#00B4A0';
+            } else {
+                element.style.color = '#333';
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Validation
+            if (!name || !email || !password || !confirmPassword) {
+                showError('Por favor, preencha todos os campos');
+                return;
+            }
+
+            if (!validatePassword()) {
+                showError('Senha não atende aos requisitos mínimos');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('As senhas não correspondem');
+                return;
+            }
+
+            // Check email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showError('Email inválido');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registrando...';
+
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        role: 'admin'
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showError(data.error || 'Erro ao registrar');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Registrar';
+                    return;
+                }
+
+                localStorage.setItem('admin_token', data.token);
+                localStorage.setItem('admin_user', JSON.stringify(data.user));
+
+                showSuccess('Conta criada com sucesso!');
+                setTimeout(() => {
+                    window.location.href = '/admin/dashboard.html';
+                }, 1500);
+            } catch (err) {
+                console.error(err);
+                showError('Erro ao conectar com o servidor');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Registrar';
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+
+        // Check authentication on page load
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('admin_token');
+            const user = localStorage.getItem('admin_user');
+            
+            if (token && user) {
+                // Admin já logado - redireciona para dashboard
+                window.location.href = '/admin/dashboard.html';
+            } else {
+                // Não é admin - redireciona para login
+                // Só pode acessar se tiver um código de convite (por enquanto redireciona)
+                showError('Acesso restrito apenas para administradores');
+                setTimeout(() => {
+                    window.location.href = '/admin/login.html';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

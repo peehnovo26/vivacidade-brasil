@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Servir arquivos estáticos do frontend
-app.use(express.static(path.join(__dirname, '../')));
+app.use(express.static(path.join(__dirname, './public')));
 
 // Servir arquivos estáticos (uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -36,10 +36,10 @@ app.get('*', (req, res) => {
     return;
   }
   // Caso contrário, tentar servir o arquivo ou o index.html
-  const filePath = path.join(__dirname, '../', req.path);
+  const filePath = path.join(__dirname, './public', req.path);
   res.sendFile(filePath, (err) => {
     if (err) {
-      res.sendFile(path.join(__dirname, '../index.html'));
+      res.sendFile(path.join(__dirname, './public/index.html'));
     }
   });
 });
