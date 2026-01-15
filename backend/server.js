@@ -25,12 +25,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Caminho para arquivos estáticos
-const publicPath = path.join(__dirname, './public');
-console.log('📁 Public path:', publicPath);
-console.log('📁 Public path exists:', fs.existsSync(publicPath));
+// Caminho para arquivos estáticos (raiz do repositório)
+const publicPath = path.join(__dirname, '../');
+console.log('📁 Serving from:', publicPath);
+console.log('📁 Path exists:', fs.existsSync(publicPath));
 
-// Servir arquivos estáticos
+// Servir arquivos estáticos da raiz
 app.use(express.static(publicPath));
 
 // Servir uploads
