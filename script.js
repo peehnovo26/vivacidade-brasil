@@ -1,4 +1,5 @@
 // Arquivo zerado para novo início
+
 // ============================================
 // CAROUSEL FUNCTIONALITY
 // ============================================
@@ -53,4 +54,6 @@ function updateCarousel() {
 // Initialize carousel on page load
 document.addEventListener('DOMContentLoaded', () => {
  startCarousel();
+});
+
 });
