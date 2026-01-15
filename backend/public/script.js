@@ -55,5 +55,3 @@ function updateCarousel() {
 document.addEventListener('DOMContentLoaded', () => {
  startCarousel();
 });
-
-});
