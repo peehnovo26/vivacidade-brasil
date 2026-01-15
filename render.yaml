@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: vivacidade-brasil
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: node backend/server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: vivacidade-db
+          property: connectionString
