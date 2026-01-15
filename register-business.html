@@ -170,7 +170,9 @@
                         <!-- Imagens -->
                         <div>
                             <h3 class="text-lg font-semibold mb-4">Imagens da Empresa</h3>
-                            <p class="text-gray-600 text-sm mb-4">Adicione fotos do seu estabelecimento, produtos e ambiente (máx. 10 imagens, 5MB cada)</p>
+                            <div id="image-limit-info" class="text-gray-600 text-sm mb-4 p-3 bg-blue-50 rounded-lg">
+                                <span id="plan-limit">Carregando limite de imagens...</span>
+                            </div>
                             
                             <div class="upload-area" id="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                                 <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,6 +202,24 @@
         const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
         let selectedFiles = [];
         let uploadedImageUrls = []; // Armazena URLs das fotos no Cloudinary
+        let maxImages = 5; // Padrão
+
+        // Definir limite de imagens baseado no plano do usuário
+        function setImageLimit() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            // Padrão: 5 imagens (pode ser ajustado conforme o plano)
+            // Free: 1 imagem
+            // Start: 3 imagens
+            // Plus: 5 imagens
+            // Elite: 10 imagens
+            maxImages = 5; // Padrão ao registrar
+            updateLimitInfo();
+        }
+
+        function updateLimitInfo() {
+            document.getElementById('plan-limit').innerHTML = 
+                `📸 Você pode adicionar até <strong>${maxImages}</strong> imagens (5MB cada)`;
+        }
 
         // Drag and Drop
         const uploadArea = document.getElementById('upload-area');
@@ -230,6 +250,12 @@
         }
 
         function handleFiles(files) {
+            // Validar limite de fotos
+            if (selectedFiles.length + files.length > maxImages) {
+                showError(`❌ Limite: máximo ${maxImages} imagens. Você selecionou ${selectedFiles.length + files.length}`);
+                return;
+            }
+            
             selectedFiles = Array.from(files);
             updatePreview();
             // Faz upload automático pro Cloudinary
@@ -364,6 +390,11 @@
                 window.location.href = '/index.html';
             }
         }
+
+        // Inicializar limite de imagens ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            setImageLimit();
+        });
     </script>
 </body>
 </html>
