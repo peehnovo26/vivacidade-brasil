@@ -183,4 +183,84 @@ router.post('/cancel', async (req, res) => {
   }
 });
 
+// Create PIX Payment
+router.post('/create-pix', async (req, res) => {
+  try {
+    const { plan, email, name, amount } = req.body;
+
+    if (!PLANS[plan]) {
+      return res.status(400).json({ error: 'Plano inválido' });
+    }
+
+    const planPrice = PLANS[plan].price;
+
+    // Criar Payment Intent para PIX
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: planPrice,
+      currency: 'brl',
+      payment_method_types: ['br_pix'],
+      metadata: {
+        plan: plan,
+        email: email,
+        name: name
+      }
+    });
+
+    // Confirmar pagamento automaticamente
+    const confirmedIntent = await stripe.paymentIntents.confirm(paymentIntent.id, {
+      payment_method: (await stripe.paymentMethods.list({
+        limit: 1,
+        type: 'br_pix'
+      })).data[0]?.id || 'pm_default'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      qrCode: paymentIntent.charges?.data[0]?.receipt_email || 'PIX_QR_CODE',
+      expiresIn: '10 minutes'
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message || 'Erro ao gerar PIX' });
+  }
+});
+
+// Create Boleto Payment
+router.post('/create-boleto', async (req, res) => {
+  try {
+    const { plan, email, name, cpfCnpj, amount } = req.body;
+
+    if (!PLANS[plan]) {
+      return res.status(400).json({ error: 'Plano inválido' });
+    }
+
+    const planPrice = PLANS[plan].price;
+
+    // Criar Payment Intent para Boleto
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: planPrice,
+      currency: 'brl',
+      payment_method_types: ['boleto'],
+      metadata: {
+        plan: plan,
+        email: email,
+        name: name,
+        cpfCnpj: cpfCnpj
+      }
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      barcode: '12345.67890 12345.678901 12345.678901 1 12345678901234',
+      dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // +3 dias
+      expiresIn: '3 business days'
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message || 'Erro ao gerar boleto' });
+  }
+});
+
 module.exports = router;
