@@ -26,6 +26,14 @@ const businessSchema = new mongoose.Schema({
     saturday: { open: String, close: String },
     sunday: { open: String, close: String }
   },
+  seals: [String], // Array de seals: 'verified', 'top-rated', 'excellent', 'award-winning'
+  coupon: {
+    code: String,
+    discount: Number, // percentual (0-100)
+    description: String,
+    expiresAt: Date,
+    active: { type: Boolean, default: true }
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

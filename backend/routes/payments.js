@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
+const Coupon = require('../models/Coupon');
 const { auth } = require('../middleware/auth');
 
 const PLANS = {
@@ -260,6 +261,84 @@ router.post('/create-boleto', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || 'Erro ao gerar boleto' });
+  }
+});
+
+// Validate and apply coupon
+router.post('/validate-coupon', async (req, res) => {
+  try {
+    const { code, businessId, totalAmount } = req.body;
+
+    if (!code || !businessId) {
+      return res.status(400).json({ error: 'Código e negócio ID são obrigatórios' });
+    }
+
+    const coupon = await Coupon.findOne({ 
+      code: code.toUpperCase(),
+      businessId,
+      active: true
+    });
+
+    if (!coupon) {
+      return res.status(404).json({ error: 'Cupom não encontrado ou inválido' });
+    }
+
+    // Verificar expiração
+    if (coupon.expiresAt && new Date() > coupon.expiresAt) {
+      return res.status(400).json({ error: 'Cupom expirado' });
+    }
+
+    // Verificar limite de usos
+    if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
+      return res.status(400).json({ error: 'Cupom atingiu limite de usos' });
+    }
+
+    // Calcular desconto
+    let discountAmount = 0;
+    if (coupon.discountType === 'percentage') {
+      discountAmount = Math.round((totalAmount * coupon.discountValue) / 100);
+    } else {
+      discountAmount = coupon.discountValue * 100; // Converter para centavos
+    }
+
+    const finalAmount = Math.max(0, totalAmount - discountAmount);
+
+    res.json({
+      valid: true,
+      coupon: {
+        code: coupon.code,
+        description: coupon.description,
+        discountType: coupon.discountType,
+        discountValue: coupon.discountValue
+      },
+      discount: discountAmount,
+      finalAmount
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Apply coupon (increment usage)
+router.post('/apply-coupon', async (req, res) => {
+  try {
+    const { code, businessId } = req.body;
+
+    const coupon = await Coupon.findOne({ 
+      code: code.toUpperCase(),
+      businessId 
+    });
+
+    if (!coupon) {
+      return res.status(404).json({ error: 'Cupom não encontrado' });
+    }
+
+    coupon.usedCount = (coupon.usedCount || 0) + 1;
+    await coupon.save();
+
+    res.json({ msg: 'Cupom aplicado com sucesso' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

@@ -3,7 +3,9 @@ const router = express.Router();
 const Business = require('../models/Business');
 const User = require('../models/User');
 const Event = require('../models/Event');
+const Coupon = require('../models/Coupon');
 const { adminAuth } = require('../middleware/auth');
+const { updateBusinessSeals, addVerifiedSeal, removeSeal, SEAL_TYPES } = require('../utils/sealManager');
 
 // Dashboard stats
 router.get('/stats', adminAuth, async (req, res) => {
@@ -179,6 +181,130 @@ router.delete('/events/:id', adminAuth, async (req, res) => {
   try {
     await Event.findByIdAndRemove(req.params.id);
     res.json({ msg: 'Event deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Seal Management Routes
+// Add verified seal to business
+router.post('/seals/:businessId/add', adminAuth, async (req, res) => {
+  try {
+    const { sealType } = req.body;
+    const validSeals = Object.values(SEAL_TYPES);
+    
+    if (!validSeals.includes(sealType)) {
+      return res.status(400).json({ error: 'Tipo de seal inválido' });
+    }
+
+    const business = await Business.findById(req.params.businessId);
+    if (!business) return res.status(404).json({ error: 'Negócio não encontrado' });
+
+    if (!business.seals) business.seals = [];
+    if (!business.seals.includes(sealType)) {
+      business.seals.push(sealType);
+      await business.save();
+    }
+
+    res.json({ msg: 'Seal adicionado', seals: business.seals });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Remove seal from business
+router.delete('/seals/:businessId/:sealType', adminAuth, async (req, res) => {
+  try {
+    const business = await Business.findById(req.params.businessId);
+    if (!business) return res.status(404).json({ error: 'Negócio não encontrado' });
+
+    business.seals = business.seals.filter(s => s !== req.params.sealType);
+    await business.save();
+
+    res.json({ msg: 'Seal removido', seals: business.seals });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Coupon Management Routes
+// Create coupon
+router.post('/coupons', adminAuth, async (req, res) => {
+  try {
+    const { code, businessId, description, discountType, discountValue, maxUses, expiresAt } = req.body;
+
+    if (!code || !businessId || !discountValue) {
+      return res.status(400).json({ error: 'Preencha todos os campos obrigatórios' });
+    }
+
+    // Verificar se código já existe
+    const existingCoupon = await Coupon.findOne({ code: code.toUpperCase() });
+    if (existingCoupon) {
+      return res.status(400).json({ error: 'Código de cupom já existe' });
+    }
+
+    const coupon = new Coupon({
+      code: code.toUpperCase(),
+      businessId,
+      description,
+      discountType,
+      discountValue,
+      maxUses,
+      expiresAt,
+      createdBy: req.user.id
+    });
+
+    await coupon.save();
+    res.status(201).json(coupon);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all coupons
+router.get('/coupons', adminAuth, async (req, res) => {
+  try {
+    const coupons = await Coupon.find()
+      .populate('businessId', 'name')
+      .populate('createdBy', 'name');
+    res.json(coupons);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get coupons by business
+router.get('/coupons/business/:businessId', adminAuth, async (req, res) => {
+  try {
+    const coupons = await Coupon.find({ businessId: req.params.businessId });
+    res.json(coupons);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update coupon
+router.put('/coupons/:id', adminAuth, async (req, res) => {
+  try {
+    const { description, discountValue, maxUses, expiresAt, active } = req.body;
+    
+    const coupon = await Coupon.findByIdAndUpdate(
+      req.params.id,
+      { description, discountValue, maxUses, expiresAt, active, updatedAt: Date.now() },
+      { new: true }
+    );
+
+    res.json(coupon);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete coupon
+router.delete('/coupons/:id', adminAuth, async (req, res) => {
+  try {
+    await Coupon.findByIdAndRemove(req.params.id);
+    res.json({ msg: 'Cupom deletado' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

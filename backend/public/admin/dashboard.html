@@ -221,6 +221,14 @@
                     <span class="text-xl mr-3">📅</span>
                     <span>Eventos</span>
                 </div>
+                <div class="nav-item px-4 py-3 rounded-lg cursor-pointer flex items-center" onclick="switchSection('seals')">
+                    <span class="text-xl mr-3">✨</span>
+                    <span>Selos</span>
+                </div>
+                <div class="nav-item px-4 py-3 rounded-lg cursor-pointer flex items-center" onclick="switchSection('coupons')">
+                    <span class="text-xl mr-3">🎟️</span>
+                    <span>Cupons</span>
+                </div>
             </nav>
 
             <hr class="border-gray-600 my-6">
@@ -398,6 +406,66 @@
                             <tbody id="events-table">
                                 <tr>
                                     <td colspan="5" class="text-center py-8 text-gray-500">Carregando eventos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Seals Section -->
+                <div id="seals" class="section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Gerenciar Selos</h3>
+                        <button onclick="openSealModal()" class="btn btn-primary">
+                            ✨ Adicionar Selo
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Negócio</th>
+                                    <th>Selos</th>
+                                    <th>Rating</th>
+                                    <th>Reviews</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="seals-table">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-gray-500">Carregando selos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Coupons Section -->
+                <div id="coupons" class="section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Gerenciar Cupons</h3>
+                        <button onclick="openCouponModal()" class="btn btn-primary">
+                            🎟️ Novo Cupom
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Negócio</th>
+                                    <th>Desconto</th>
+                                    <th>Usos</th>
+                                    <th>Validade</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coupons-table">
+                                <tr>
+                                    <td colspan="7" class="text-center py-8 text-gray-500">Carregando cupons...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -598,6 +666,77 @@
         </div>
     </div>
 
+    <!-- Seal Modal -->
+    <div id="sealModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-6">Adicionar Selo</h2>
+            <div class="form-group">
+                <label>Negócio</label>
+                <select id="seal-business" required>
+                    <option value="">-- Selecione o negócio --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tipo de Selo</label>
+                <select id="seal-type" required>
+                    <option value="">-- Selecione o tipo --</option>
+                    <option value="verified">✓ Verificado</option>
+                    <option value="top-rated">⭐ Top Avaliado</option>
+                    <option value="excellent">💎 Excelente</option>
+                    <option value="award-winning">🏆 Premiado</option>
+                </select>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeSealModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
+                <button onclick="saveSeal()" class="flex-1 btn btn-primary">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coupon Modal -->
+    <div id="couponModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-6" id="coupon-modal-title">Novo Cupom</h2>
+            <div class="form-group">
+                <label>Código (sem espaços)</label>
+                <input type="text" id="coupon-code" placeholder="Ex: PROMO20" style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label>Negócio</label>
+                <select id="coupon-business" required>
+                    <option value="">-- Selecione o negócio --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Descrição</label>
+                <input type="text" id="coupon-description" placeholder="Ex: Desconto especial de 20%">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Desconto</label>
+                <select id="coupon-type">
+                    <option value="percentage">Percentual (%)</option>
+                    <option value="fixed">Valor Fixo (R$)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Valor de Desconto</label>
+                <input type="number" id="coupon-value" placeholder="Ex: 20" min="0">
+            </div>
+            <div class="form-group">
+                <label>Limite de Usos (deixe em branco para ilimitado)</label>
+                <input type="number" id="coupon-max-uses" placeholder="Ex: 100" min="0">
+            </div>
+            <div class="form-group">
+                <label>Data de Expiração</label>
+                <input type="date" id="coupon-expires">
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeCouponModal()" class="flex-1 btn" style="background: #e9ecef; color: #333;">Cancelar</button>
+                <button onclick="saveCoupon()" class="flex-1 btn btn-primary" id="coupon-submit-btn">Criar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = 'https://vivacidade-brasil-api.onrender.com/api';
         let adminToken = localStorage.getItem('admin_token');
@@ -644,6 +783,8 @@
             else if (sectionName === 'users') loadUsers();
             else if (sectionName === 'reviews') loadReviews();
             else if (sectionName === 'events') loadEvents();
+            else if (sectionName === 'seals') loadSealsData();
+            else if (sectionName === 'coupons') loadCouponsData();
         }
 
         async function loadDashboardData() {
@@ -1212,15 +1353,258 @@
             window.location.href = '/admin/login.html';
         }
 
+        // Seal Modal Functions
+        async function loadSealsData() {
+            try {
+                const [businessesRes, businessListRes] = await Promise.all([
+                    fetch(`${API_URL}/businesses`, { headers: { 'Authorization': `Bearer ${adminToken}` } }),
+                    fetch(`${API_URL}/businesses`, { headers: { 'Authorization': `Bearer ${adminToken}` } })
+                ]);
+
+                const businesses = await businessesRes.json();
+                const tbody = document.getElementById('seals-table');
+
+                if (!Array.isArray(businesses) || businesses.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Nenhum negócio cadastrado</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = businesses.map(b => `
+                    <tr>
+                        <td><strong>${b.name}</strong></td>
+                        <td>
+                            <div class="flex gap-1 flex-wrap">
+                                ${(b.seals || []).map(seal => {
+                                    const labels = { verified: '✓', 'top-rated': '⭐', excellent: '💎', 'award-winning': '🏆' };
+                                    return `<span class="badge badge-success" style="cursor: pointer;" onclick="removeSeal('${b._id}', '${seal}')">${labels[seal]} ×</span>`;
+                                }).join('')}
+                            </div>
+                        </td>
+                        <td>${(b.rating || 0).toFixed(1)} ⭐</td>
+                        <td>${b.reviews ? b.reviews.length : 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="openSealModalForBusiness('${b._id}')">+ Selo</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Preencher select de negócios
+                const select = document.getElementById('seal-business');
+                select.innerHTML = '<option value="">-- Selecione o negócio --</option>' + businesses.map(b => `<option value="${b._id}">${b.name}</option>`).join('');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('seals-table').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Erro ao carregar selos</td></tr>';
+            }
+        }
+
+        function openSealModal() {
+            editingSealBusinessId = null;
+            document.getElementById('seal-business').value = '';
+            document.getElementById('seal-type').value = '';
+            document.getElementById('sealModal').classList.add('active');
+        }
+
+        function openSealModalForBusiness(businessId) {
+            editingSealBusinessId = businessId;
+            document.getElementById('seal-business').value = businessId;
+            document.getElementById('seal-type').value = '';
+            document.getElementById('sealModal').classList.add('active');
+        }
+
+        function closeSealModal() {
+            document.getElementById('sealModal').classList.remove('active');
+            editingSealBusinessId = null;
+        }
+
+        async function removeSeal(businessId, sealType) {
+            if (!confirm(`Remover selo "${sealType}"?`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/seals/${businessId}/${sealType}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                if (res.ok) {
+                    loadSealsData();
+                    loadDashboardData();
+                } else {
+                    alert('Erro ao remover selo');
+                }
+            } catch (err) {
+                alert('Erro ao conectar com servidor');
+            }
+        }
+
+        async function saveSeal() {
+            const businessId = document.getElementById('seal-business').value;
+            const sealType = document.getElementById('seal-type').value;
+
+            if (!businessId || !sealType) {
+                alert('Selecione o negócio e o tipo de selo');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/admin/seals/${businessId}/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ sealType })
+                });
+
+                if (res.ok) {
+                    alert('Selo adicionado com sucesso!');
+                    closeSealModal();
+                    loadSealsData();
+                    loadDashboardData();
+                } else {
+                    alert('Erro ao adicionar selo');
+                }
+            } catch (err) {
+                alert('Erro ao conectar com servidor');
+            }
+        }
+
+        // Coupon Modal Functions
+        async function loadCouponsData() {
+            try {
+                const [couponsRes, businessListRes] = await Promise.all([
+                    fetch(`${API_URL}/admin/coupons`, { headers: { 'Authorization': `Bearer ${adminToken}` } }),
+                    fetch(`${API_URL}/businesses`, { headers: { 'Authorization': `Bearer ${adminToken}` } })
+                ]);
+
+                const coupons = await couponsRes.json();
+                const businesses = await businessListRes.json();
+                const tbody = document.getElementById('coupons-table');
+
+                if (!Array.isArray(coupons) || coupons.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500">Nenhum cupom cadastrado</td></tr>';
+                } else {
+                    tbody.innerHTML = coupons.map(c => `
+                        <tr>
+                            <td><strong>${c.code}</strong></td>
+                            <td>${c.businessId && c.businessId.name ? c.businessId.name : 'N/A'}</td>
+                            <td>${c.discountType === 'percentage' ? c.discountValue + '%' : 'R$ ' + (c.discountValue / 100).toFixed(2)}</td>
+                            <td>${c.usedCount || 0}${c.maxUses ? ' / ' + c.maxUses : ''}</td>
+                            <td>${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString('pt-BR') : 'Sem expiração'}</td>
+                            <td><span class="badge ${c.active ? 'badge-success' : 'badge-danger'}">${c.active ? 'Ativo' : 'Inativo'}</span></td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCoupon('${c._id}')">🗑️</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Preencher select de negócios
+                const select = document.getElementById('coupon-business');
+                select.innerHTML = '<option value="">-- Selecione o negócio --</option>' + businesses.map(b => `<option value="${b._id}">${b.name}</option>`).join('');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('coupons-table').innerHTML = '<tr><td colspan="7" class="text-center py-8 text-red-500">Erro ao carregar cupons</td></tr>';
+            }
+        }
+
+        function openCouponModal() {
+            editingCouponId = null;
+            document.getElementById('coupon-modal-title').textContent = 'Novo Cupom';
+            document.getElementById('coupon-submit-btn').textContent = 'Criar';
+            document.getElementById('coupon-code').value = '';
+            document.getElementById('coupon-business').value = '';
+            document.getElementById('coupon-description').value = '';
+            document.getElementById('coupon-type').value = 'percentage';
+            document.getElementById('coupon-value').value = '';
+            document.getElementById('coupon-max-uses').value = '';
+            document.getElementById('coupon-expires').value = '';
+            document.getElementById('couponModal').classList.add('active');
+        }
+
+        function closeCouponModal() {
+            document.getElementById('couponModal').classList.remove('active');
+            editingCouponId = null;
+        }
+
+        async function saveCoupon() {
+            const code = document.getElementById('coupon-code').value.trim();
+            const businessId = document.getElementById('coupon-business').value;
+            const description = document.getElementById('coupon-description').value;
+            const discountType = document.getElementById('coupon-type').value;
+            const discountValue = parseFloat(document.getElementById('coupon-value').value);
+            const maxUses = parseInt(document.getElementById('coupon-max-uses').value) || null;
+            const expiresAt = document.getElementById('coupon-expires').value;
+
+            if (!code || !businessId || !discountValue) {
+                alert('Preencha os campos obrigatórios');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/admin/coupons`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({
+                        code,
+                        businessId,
+                        description,
+                        discountType,
+                        discountValue,
+                        maxUses,
+                        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Cupom criado com sucesso!');
+                    closeCouponModal();
+                    loadCouponsData();
+                    loadDashboardData();
+                } else {
+                    const error = await res.json();
+                    alert(`Erro: ${error.error}`);
+                }
+            } catch (err) {
+                alert('Erro ao conectar com servidor');
+            }
+        }
+
+        async function deleteCoupon(couponId) {
+            if (!confirm('Deletar este cupom?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/coupons/${couponId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+
+                if (res.ok) {
+                    loadCouponsData();
+                    loadDashboardData();
+                } else {
+                    alert('Erro ao deletar cupom');
+                }
+            } catch (err) {
+                alert('Erro ao conectar com servidor');
+            }
+        }
+
         // Close modals when clicking outside
         window.onclick = function(event) {
             const businessModal = document.getElementById('businessModal');
             const userModal = document.getElementById('userModal');
             const eventModal = document.getElementById('eventModal');
+            const sealModal = document.getElementById('sealModal');
+            const couponModal = document.getElementById('couponModal');
             
             if (event.target === businessModal) closeBusinessModal();
             if (event.target === userModal) closeUserModal();
             if (event.target === eventModal) closeEventModal();
+            if (event.target === sealModal) closeSealModal();
+            if (event.target === couponModal) closeCouponModal();
         }
     </script>
 </body>
