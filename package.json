@@ -2,9 +2,9 @@
   "name": "vivacidade-brasil",
   "version": "1.0.0",
   "description": "Plataforma de turismo para o Vale do Café",
-  "main": "backend/server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node backend/server.js",
+    "start": "node index.js",
     "dev": "cd backend && nodemon server.js",
     "seed": "cd backend && node seed.js"
   },
