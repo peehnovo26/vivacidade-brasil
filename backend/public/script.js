@@ -30,11 +30,11 @@ function updateCarousel() {
  const carouselSlides = document.querySelectorAll('.carousel-slide');
  carouselSlides.forEach((slide, index) => {
   if (index === currentSlide) {
-   slide.classList.remove('opacity-0');
-   slide.classList.add('opacity-100');
+   slide.style.opacity = '1';
+   slide.style.zIndex = '10';
   } else {
-   slide.classList.remove('opacity-100');
-   slide.classList.add('opacity-0');
+   slide.style.opacity = '0';
+   slide.style.zIndex = '0';
   }
  });
 
@@ -42,11 +42,9 @@ function updateCarousel() {
  const dots = document.querySelectorAll('.carousel-dot');
  dots.forEach((dot, index) => {
   if (index === currentSlide) {
-   dot.classList.remove('bg-white/30');
-   dot.classList.add('bg-white/70');
+   dot.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
   } else {
-   dot.classList.remove('bg-white/70');
-   dot.classList.add('bg-white/30');
+   dot.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
   }
  });
 }
