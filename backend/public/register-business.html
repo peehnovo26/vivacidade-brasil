@@ -113,11 +113,50 @@
                                     <label class="block text-sm font-semibold mb-2">Categoria *</label>
                                     <select id="category" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
                                         <option value="">Selecione uma categoria</option>
-                                        <option value="Hospedagem">Hospedagem</option>
-                                        <option value="Gastronomia">Gastronomia</option>
-                                        <option value="Turismo">Turismo e Lazer</option>
-                                        <option value="Eventos">Eventos</option>
-                                        <option value="Comércio">Comércio e Serviços</option>
+                                        <optgroup label="Hospedagem">
+                                            <option value="Hotel">Hotel</option>
+                                            <option value="Pousada">Pousada</option>
+                                            <option value="Hostel">Hostel</option>
+                                            <option value="Resort">Resort</option>
+                                            <option value="Chalé">Chalé</option>
+                                        </optgroup>
+                                        <optgroup label="Gastronomia">
+                                            <option value="Restaurante">Restaurante</option>
+                                            <option value="Bar">Bar</option>
+                                            <option value="Café">Café</option>
+                                            <option value="Sorveteria">Sorveteria</option>
+                                            <option value="Confeitaria">Confeitaria</option>
+                                            <option value="Pizzaria">Pizzaria</option>
+                                        </optgroup>
+                                        <optgroup label="Turismo e Lazer">
+                                            <option value="Trilha e Natureza">Trilha e Natureza</option>
+                                            <option value="Passeio">Passeio Turístico</option>
+                                            <option value="Parque">Parque</option>
+                                            <option value="Cachoeira">Cachoeira</option>
+                                            <option value="Balneário">Balneário</option>
+                                            <option value="Esportes Radicais">Esportes Radicais</option>
+                                        </optgroup>
+                                        <optgroup label="Eventos">
+                                            <option value="Casa de Eventos">Casa de Eventos</option>
+                                            <option value="Buffet">Buffet</option>
+                                            <option value="Decoração">Decoração de Eventos</option>
+                                            <option value="Fotografia">Fotografia e Vídeo</option>
+                                            <option value="DJ">DJ e Sonorização</option>
+                                        </optgroup>
+                                        <optgroup label="Comércio e Serviços">
+                                            <option value="Loja">Loja</option>
+                                            <option value="Salão">Salão de Beleza</option>
+                                            <option value="Farmácia">Farmácia</option>
+                                            <option value="Oficina">Oficina Mecânica</option>
+                                            <option value="Padaria">Padaria</option>
+                                            <option value="Mercado">Mercado</option>
+                                        </optgroup>
+                                        <optgroup label="Atividades e Experiências">
+                                            <option value="Yoga">Yoga e Meditação</option>
+                                            <option value="Artes">Artes e Artesanato</option>
+                                            <option value="Musica">Música e Dança</option>
+                                            <option value="Cursos">Cursos e Treinamentos</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                             </div>
@@ -501,7 +540,7 @@
 
                 showSuccess('Empresa cadastrada com sucesso!');
                 setTimeout(() => {
-                    window.location.href = '/index.html';
+                    window.location.href = '/dashboard.html';
                 }, 2000);
 
             } catch (err) {
